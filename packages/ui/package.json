@@ -1,0 +1,18 @@
+{
+  "name": "@itm/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared web UI components (Tailwind) for the web and admin apps. Wording follows docs/business-model.md §5.",
+  "type": "module",
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}

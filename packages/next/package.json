@@ -1,0 +1,30 @@
+{
+  "name": "@itm/next",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Supabase session helpers for the Next.js apps (web, admin): server client, browser client, proxy session refresh.",
+  "type": "module",
+  "exports": {
+    "./server": "./src/server.ts",
+    "./browser": "./src/browser.ts",
+    "./proxy": "./src/proxy.ts",
+    "./env": "./src/env.ts",
+    "./sign-in-form": "./src/sign-in-form.tsx",
+    "./safe-next": "./src/safe-next.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@itm/api": "*",
+    "@itm/core": "*",
+    "@itm/types": "*",
+    "@supabase/ssr": "0.12.7",
+    "server-only": "0.0.1",
+    "@itm/ui": "*"
+  },
+  "peerDependencies": {
+    "next": "*",
+    "react": "*"
+  }
+}
