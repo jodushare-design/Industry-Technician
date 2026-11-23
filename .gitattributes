@@ -1,0 +1,23 @@
+# Keep LF line endings in the repository and in every checkout, on every OS.
+# Generated seed files are compared byte for byte in tests
+# (supabase/tests/catalogue.test.ts), and SQL/CSV must not pick up CRLF.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files: never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.jks binary
+*.keystore binary
