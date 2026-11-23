@@ -734,6 +734,12 @@ export interface Database {
         Update: Partial<Row<{ id: string; complaint_id: string; storage_path: string; mime_type: string; size_bytes: number; uploaded_by: string; created_at: string }>>;
         Relationships: [];
       };
+      platform_settings: {
+        Row: Row<{ key: string; value: Json; label: string; description: string; updated_at: string; updated_by: string | null }>;
+        Insert: Partial<Row<{ key: string; value: Json; label: string; description: string; updated_at: string; updated_by: string | null }>>;
+        Update: Partial<Row<{ key: string; value: Json; label: string; description: string; updated_at: string; updated_by: string | null }>>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -887,6 +893,8 @@ export interface Database {
       set_complaint_status: { Args: { p_complaint: string; p_status: ComplaintStatus; p_resolution?: ComplaintResolution | null; p_notes?: string | null }; Returns: undefined };
       close_disputed_job: { Args: { p_request: string; p_note: string }; Returns: undefined };
       staff_read_conversation: { Args: { p_complaint: string; p_conversation: string }; Returns: Json };
+      set_platform_setting: { Args: { p_key: string; p_value: Json }; Returns: undefined };
+      admin_report: { Args: { p_from: string; p_to: string }; Returns: Json };
     };
     Enums: {
       app_role: AppRole;

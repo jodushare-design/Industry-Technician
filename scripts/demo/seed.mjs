@@ -18,6 +18,7 @@ export const DEMO_ACCOUNTS = [
   { phone: '9000000009', name: 'Arjun Das', role: 'Platform administrator (admin portal)' },
 ];
 
+/** Seeds the fictional demo world. Returns the user ids (by phone) and key record ids. */
 export async function seedDemo({ db, asCaller, storageDir }) {
   const users = {};
   for (const a of DEMO_ACCOUNTS) {
@@ -192,4 +193,7 @@ export async function seedDemo({ db, asCaller, storageDir }) {
   await as(P, 'select public.respond_to_invitation($1, true)', [inv3]);
   await as(P, 'select public.assign_company_member($1, $2)', [inv3, member]);
   await as(C, `select public.open_complaint($1, 'delay', 'The visit was promised for Monday but nobody came and there was no message.')`, [r3]);
+
+  // Ids for callers that build on the demo (the security tests use them).
+  return { users, factory, ravi, srinivas, anil, org, company, member, r1, r2, r3, conv1, est1, est2, part };
 }

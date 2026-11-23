@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
-type Section = { label: string; href?: string; phase?: string; color: string; glyph: string };
+type Section = { label: string; href: string; color: string; glyph: string };
 
-/** Admin sections, grouped like a macOS sidebar. Live sections link; the rest show the phase that builds them. */
+/** Admin sections, grouped like a macOS sidebar. */
 const GROUPS: Array<{ title: string; items: Section[] }> = [
   {
     title: "Overview",
@@ -35,10 +35,22 @@ const GROUPS: Array<{ title: string; items: Section[] }> = [
   {
     title: "Platform",
     items: [
-      { label: "Catalogue", href: "/catalogue", color: "bg-ios-yellow", glyph: "≡" },
+      { label: "Reports", href: "/reports", color: "bg-ios-blue", glyph: "▤" },
       { label: "Audit log", href: "/audit", color: "bg-ios-indigo", glyph: "⌘" },
-      { label: "Reports", phase: "11", color: "bg-ios-blue", glyph: "▤" },
-      { label: "Settings", phase: "11", color: "bg-ios-teal", glyph: "⚙" },
+      { label: "Settings", href: "/settings", color: "bg-ios-teal", glyph: "⚙" },
+    ],
+  },
+  {
+    title: "Catalogue",
+    items: [
+      { label: "Review queue", href: "/catalogue", color: "bg-ios-yellow", glyph: "≡" },
+      { label: "Machines", href: "/catalogue?kind=machine_type&status=all", color: "bg-ios-orange", glyph: "M" },
+      { label: "Manufacturers", href: "/catalogue?kind=manufacturer&status=all", color: "bg-ios-indigo", glyph: "F" },
+      { label: "Machine models", href: "/catalogue?kind=model&status=all", color: "bg-ios-purple", glyph: "#" },
+      { label: "Faults", href: "/catalogue?kind=fault&status=all", color: "bg-ios-red", glyph: "⚠" },
+      { label: "Skills", href: "/catalogue?kind=service_skill&status=all", color: "bg-ios-green", glyph: "★" },
+      { label: "Spare parts", href: "/catalogue?kind=spare_part&status=all", color: "bg-ios-teal", glyph: "⚙" },
+      { label: "Suggestions", href: "/catalogue/suggestions", color: "bg-ios-pink", glyph: "+" },
     ],
   },
 ];
@@ -62,17 +74,10 @@ export default function AdminLayout({ children }: LayoutProps<"/">) {
                 <ul className="flex gap-1 md:block md:space-y-0.5">
                   {g.items.map((s) => (
                     <li key={s.label} className="shrink-0">
-                      {s.href ? (
-                        <Link href={s.href} className="flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[14px] transition hover:bg-subtle">
-                          <span aria-hidden className={`flex size-6 items-center justify-center rounded-[7px] text-[11px] font-bold text-white ${s.color}`}>{s.glyph}</span>
-                          {s.label}
-                        </Link>
-                      ) : (
-                        <span className="flex items-center gap-2.5 px-3 py-1.5 text-[14px] text-muted" title={`Built in phase ${s.phase}`}>
-                          <span aria-hidden className={`flex size-6 items-center justify-center rounded-[7px] text-[11px] font-bold text-white opacity-40 ${s.color}`}>{s.glyph}</span>
-                          {s.label} <span className="text-[11px]">· soon</span>
-                        </span>
-                      )}
+                      <Link href={s.href} className="flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[14px] transition hover:bg-subtle">
+                        <span aria-hidden className={`flex size-6 items-center justify-center rounded-[7px] text-[11px] font-bold text-white ${s.color}`}>{s.glyph}</span>
+                        {s.label}
+                      </Link>
                     </li>
                   ))}
                 </ul>

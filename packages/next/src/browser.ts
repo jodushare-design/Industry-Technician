@@ -2,7 +2,7 @@
 import { createBrowserClient } from '@supabase/ssr';
 import type { ItmClient } from '@itm/api';
 import type { Database } from '@itm/types';
-import { publicSupabaseEnv } from './env';
+import { authCookieName, publicSupabaseEnv } from './env';
 
 let client: ItmClient | undefined;
 
@@ -10,7 +10,8 @@ let client: ItmClient | undefined;
 export function getBrowserSupabase(): ItmClient {
   if (!client) {
     const { url, publicKey } = publicSupabaseEnv();
-    client = createBrowserClient<Database>(url, publicKey) as unknown as ItmClient;
+    const name = authCookieName();
+    client = createBrowserClient<Database>(url, publicKey, name ? { cookieOptions: { name } } : {}) as unknown as ItmClient;
   }
   return client;
 }

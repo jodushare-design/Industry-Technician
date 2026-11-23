@@ -4,13 +4,14 @@ import { createServerClient } from '@supabase/ssr';
 import { getMyContext, rolesOf, type ItmClient } from '@itm/api';
 import type { Role } from '@itm/core';
 import type { Database, MyContext } from '@itm/types';
-import { isSupabaseConfigured, publicSupabaseEnv } from './env';
+import { authCookieName, isSupabaseConfigured, publicSupabaseEnv } from './env';
 
 /** Supabase client bound to the request's auth cookies (RLS applies as the signed-in user). */
 export async function createServerSupabase(): Promise<ItmClient> {
   const { url, publicKey } = publicSupabaseEnv();
   const cookieStore = await cookies();
   return createServerClient<Database>(url, publicKey, {
+    ...(authCookieName() && { cookieOptions: { name: authCookieName() } }),
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (toSet) => {

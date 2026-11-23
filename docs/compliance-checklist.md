@@ -2,7 +2,9 @@
 
 > **DRAFT — LEGAL REVIEW REQUIRED.** This is a product team's list of topics to take to an Indian lawyer and a chartered accountant. It is **not legal or tax advice**. Laws, rules and their commencement dates change, so every "Verify" item must be confirmed by counsel against the law in force on the launch date.
 
-**Prepared:** 2026-11-22. **Overall status:** Not reviewed.
+**Prepared:** 2026-11-22, updated 2026-11-23. **Overall status:** Not reviewed.
+
+For the reviewing lawyer, the same topics are grouped as questions in [legal-review/legal-review-checklist.md](legal-review/legal-review-checklist.md).
 
 **Status values:**
 - `Open` — not yet reviewed
@@ -33,9 +35,9 @@
 | 2.1 | Does the platform qualify as an intermediary for user content (chat, profiles, uploads)? Does safe-harbour (s.79) apply? | Due-diligence duties | Counsel | Open |
 | 2.2 | Rules and user notices published (privacy policy, user agreement, prohibited content) | Docs 01–07 | Counsel | Open |
 | 2.3 | Grievance Officer, complaint acknowledgement and disposal timelines | Same complaint system as §1.4 | Counsel / Product | Open |
-| 2.4 | Takedown on court or government order within the required time | Admin "content takedown" action plus audit | Product | Open |
+| 2.4 | Takedown on court or government order within the required time | Admin "content takedown" action plus audit. **Not built yet**: staff can suspend accounts and reject profiles today ([security.md](security.md#known-gaps-before-public-launch)) | Product | Open |
 | 2.5 | Log and record retention when required by law; cyber-incident reporting to CERT-In (CERT-In Directions, 2022) | Log retention settings; incident runbook | Engineering | Open |
-| 2.6 | Reasonable security practices (s.43A / SPDI Rules, if still relevant alongside DPDP) | Security controls in Prompt 11 | Counsel / Engineering | Open |
+| 2.6 | Reasonable security practices (s.43A / SPDI Rules, if still relevant alongside DPDP) | Controls and tests in [security.md](security.md) (built 2026-11-23); counsel to confirm adequacy | Counsel / Engineering | Built — needs counsel |
 | 2.7 | Electronic contract and approval evidence | OTP-authenticated approvals, hashes, timestamps (risk-control §4) | Counsel | Open |
 
 ## 3. Digital Personal Data Protection Act, 2023 and DPDP Rules
@@ -45,8 +47,8 @@
 | 3.1 | **Verify** which obligations under the DPDP Rules are in force on the launch date, and which come into force later under the phased commencement | Plan launch against obligations in force + those due soon | Counsel | Open |
 | 3.2 | Notice and consent: itemised, in clear language, [Indian-language versions?], withdrawal as easy as giving | Consent screens; `consent_record` table | Product | Open |
 | 3.3 | Legitimate-use bases where consent isn't used | Privacy Policy §3 | Counsel | Open |
-| 3.4 | Data principal rights: access, correction, erasure, grievance, nomination | Self-service export / correction; erasure request workflow with retention exceptions | Product | Open |
-| 3.5 | Retention and erasure schedule per record type | Retention jobs (Prompt 11) | Counsel / Engineering | Open |
+| 3.4 | Data principal rights: access, correction, erasure, grievance, nomination | Self-service export / correction; erasure request workflow with retention exceptions. **Not built yet** | Product | Open |
+| 3.5 | Retention and erasure schedule per record type | Retention jobs, **not built yet**; waiting for counsel’s schedule | Counsel / Engineering | Open |
 | 3.6 | Breach notification to the Data Protection Board and affected users | Incident runbook | Counsel / Engineering | Open |
 | 3.7 | Processor contracts (Supabase, SMS gateway, FCM/Expo, Sentry) | Data processing agreements; region choice (Supabase Mumbai region preferred) | Counsel / Founder | Open |
 | 3.8 | Children's data | Users must be 18+; age declaration at sign-up | Product | Open |

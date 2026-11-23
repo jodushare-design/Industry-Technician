@@ -77,6 +77,7 @@ export function toAppError(e: unknown): AppError {
   // Business rule raised from SQL
   const rule = BUSINESS_RULE_PREFIX.exec(message);
   if (err.code === 'P0001' && rule) {
+    if (rule[1] === 'rate_limited') return new AppError('rate_limited', { message, userMessage: rule[2] || undefined, cause: e });
     return new AppError('business_rule', { message: `${rule[1]}: ${rule[2]}`, userMessage: rule[2] || undefined, cause: e });
   }
 

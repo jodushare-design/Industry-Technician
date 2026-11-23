@@ -16,7 +16,7 @@ The working log for the phased build in the "Claude Code Master Prompt Sequence"
 | Estimates and customer approval | 8 | Done (web) | see git log |
 | Spare-parts coordination | 9 | Done (web) | see git log |
 | Job states, completion, complaints | 10 | Done (web + admin) | see git log |
-| Admin, compliance, security tests | 11 | **In progress** | |
+| Admin, compliance, security tests | 11 | Done (admin reports + settings, rate limits, security suite, legal review checklist; see docs/security.md for known gaps) | see git log |
 | Pilot test plan and release docs | 12 | Not started | |
 
 ## How to continue

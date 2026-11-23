@@ -42,6 +42,8 @@ Then follow [docs/setup.md](docs/setup.md) to connect a Supabase dev project.
 | [risk-control-design.md](docs/risk-control-design.md) | Product features that enforce the model |
 | [legal-review/](docs/legal-review/) | 12 draft legal templates — **DRAFT — LEGAL REVIEW REQUIRED** |
 | [compliance-checklist.md](docs/compliance-checklist.md) | Items for counsel and CA |
+| [legal-review/legal-review-checklist.md](docs/legal-review/legal-review-checklist.md) | Questions for the reviewing lawyer, by area |
+| [security.md](docs/security.md) | Security controls, guarantees, tests and known gaps |
 | [catalogue.md](docs/catalogue.md) | Machine catalogue: model, rules, import/export, admin workflow |
 | [catalogue-research-worklist.md](docs/catalogue-research-worklist.md) | Research still needed (manufacturers, models, local-language names) |
 | [onboarding.md](docs/onboarding.md) | Customer, technician and company onboarding; verification rules |

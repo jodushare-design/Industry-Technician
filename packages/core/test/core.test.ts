@@ -105,6 +105,12 @@ describe('error mapping', () => {
     expect(e.userMessage).toBe('An accepted estimate cannot be changed');
   });
 
+  it('maps the SQL rate limit to rate_limited, keeping its message', () => {
+    const e = toAppError({ code: 'P0001', message: 'ITM:rate_limited: Please wait a little and try again.' });
+    expect(e.code).toBe('rate_limited');
+    expect(e.userMessage).toBe('Please wait a little and try again.');
+  });
+
   it('maps fetch failures to network', () => {
     expect(toAppError(new TypeError('Failed to fetch')).code).toBe('network');
   });

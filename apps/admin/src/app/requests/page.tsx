@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { JOB_STATUS_LABELS, SERVICE_TYPE_LABELS, URGENCY_LABELS } from "@itm/core";
+import Link from "next/link";
+import { JOB_STATUS_LABELS, SERVICE_TYPE_LABELS, URGENCY_LABELS, type JobStatus } from "@itm/core";
 import { PageHeader } from "@itm/ui";
 import { requireStaff } from "@/lib/dal";
 import { NoAccess } from "../no-access";
@@ -8,15 +9,20 @@ export const metadata: Metadata = { title: "Service requests" };
 export const dynamic = "force-dynamic";
 
 /** Read-only overview. Staff can follow requests but never assign providers or act for a customer. */
-export default async function AdminRequestsPage() {
+export default async function AdminRequestsPage({ searchParams }: PageProps<"/requests">) {
   const session = await requireStaff("/requests");
   if (!session) return <NoAccess />;
   const { client } = session;
-  const { data: requests } = await client
+  const sp = await searchParams;
+  const raw = Array.isArray(sp.status) ? sp.status[0] : sp.status;
+  const status = raw && raw in JOB_STATUS_LABELS ? (raw as JobStatus) : null;
+  let query = client
     .from("service_requests")
     .select("id, reference, status, service_type, urgency, machine_type_id, customer_id, factory_id, created_at")
     .order("created_at", { ascending: false })
     .limit(200);
+  if (status) query = query.eq("status", status);
+  const { data: requests } = await query;
   const rs = requests ?? [];
   const [{ data: types }, { data: customers }, { data: factories }, { data: invitations }] = rs.length
     ? await Promise.all([
@@ -33,6 +39,11 @@ export default async function AdminRequestsPage() {
   return (
     <div>
       <PageHeader title="Service requests" description="Latest 200. Read-only: customers choose and contact providers themselves." />
+      {status && (
+        <p className="mb-3 text-sm">
+          Showing <strong>{JOB_STATUS_LABELS[status]}</strong> only · <Link className="underline" href="/requests">Show all</Link>
+        </p>
+      )}
       <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
         <table className="w-full text-left text-sm">
           <thead className="bg-subtle">

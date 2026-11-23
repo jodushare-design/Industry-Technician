@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import type { Database } from '@itm/types';
-import { isSupabaseConfigured, publicSupabaseEnv } from './env';
+import { authCookieName, isSupabaseConfigured, publicSupabaseEnv } from './env';
 
 export interface SessionProxyOptions {
   /** Paths that need a signed-in user (prefix match). */
@@ -21,6 +21,7 @@ export async function refreshSession(request: NextRequest, opts: SessionProxyOpt
 
   const { url, publicKey } = publicSupabaseEnv();
   const supabase = createServerClient<Database>(url, publicKey, {
+    ...(authCookieName() && { cookieOptions: { name: authCookieName() } }),
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (toSet) => {

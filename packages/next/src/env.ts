@@ -29,3 +29,12 @@ export function publicSupabaseEnv(): PublicSupabaseEnv {
 export function isSupabaseConfigured(): boolean {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 }
+
+/**
+ * Auth cookie name for this app, or undefined for the Supabase default.
+ * The admin portal sets its own (apps/admin/next.config.ts) so staff and
+ * website sessions never share a cookie.
+ */
+export function authCookieName(): string | undefined {
+  return process.env.NEXT_PUBLIC_AUTH_COOKIE || undefined;
+}

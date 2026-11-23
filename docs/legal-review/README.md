@@ -2,6 +2,8 @@
 
 > **DRAFT — LEGAL REVIEW REQUIRED.** Every document in this folder is a structured template written by the product team. **None of it is legal advice**, and none has been reviewed by an Indian lawyer. Do not publish any of it to users until its status is `Approved`.
 
+**Start here:** [legal-review-checklist.md](legal-review-checklist.md) groups the questions for counsel by area: e-commerce, grievances, intermediary rules, DPDP, terms, provider and customer agreements, safety, tax, registration and insurance.
+
 ## How to use these templates
 
 - `[Square brackets]` mark placeholders or questions for counsel.
