@@ -84,7 +84,7 @@ sequenceDiagram
 
 A user can hold several roles; they are rows in `user_roles` and are revoked by setting `revoked_at`, so history is kept. The permission matrix in `packages/core/src/roles.ts` mirrors the database. No role other than `customer` can approve an estimate or a part cost, including admins.
 
-## Data model so far (`supabase/migrations/20261122000100_foundation.sql`)
+## Data model so far (`supabase/migrations/`)
 
 | Table | Purpose | Who can read | Who can write |
 |---|---|---|---|
@@ -94,6 +94,7 @@ A user can hold several roles; they are rows in `user_roles` and are revoked by 
 | `legal_documents` | Versioned terms with review status | everyone (non-withdrawn) | operator / platform admin (SQL for now) |
 | `terms_acceptances` | Who accepted which version, and its review status at the time | self, staff | `accept_legal_document` |
 | `audit_log` | Append-only trail | platform admin | Triggers and RPCs only. No update, delete or truncate for anyone, including the database owner. |
+| `catalogue_*` (Prompt 4) | Machine catalogue: entities, aliases, links, sources, suggestions, search events, import batches | approved records: everyone; all records: staff | Admin-only RPCs; imports start as pending_review; see [catalogue.md](catalogue.md) |
 
 ## Rendering
 

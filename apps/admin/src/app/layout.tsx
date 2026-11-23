@@ -13,12 +13,12 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 const SECTIONS: Array<{ label: string; href?: string; phase?: string }> = [
   { label: "Dashboard", href: "/" },
   { label: "Users & roles", href: "/users" },
+  { label: "Catalogue", href: "/catalogue" },
   { label: "Audit log", href: "/audit" },
   { label: "Customers", phase: "5" },
   { label: "Technicians", phase: "5" },
   { label: "Companies", phase: "5" },
   { label: "Verification", phase: "5" },
-  { label: "Catalogue", phase: "4" },
   { label: "Service requests", phase: "6" },
   { label: "Complaints", phase: "10" },
   { label: "Reports", phase: "11" },

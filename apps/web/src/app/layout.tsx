@@ -21,6 +21,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               Industrial Technician Marketplace
             </Link>
             <div className="flex items-center gap-4 text-sm">
+              <Link href="/machines" className="hover:underline">
+                Machines
+              </Link>
               <Link href="/account" className="hover:underline">
                 My account
               </Link>

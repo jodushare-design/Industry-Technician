@@ -11,6 +11,7 @@
  * before release (docs/setup.md → "RLS tests against Supabase").
  */
 import { PGlite } from '@electric-sql/pglite';
+import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -47,6 +48,10 @@ const SUPABASE_SHIM = /* sql */ `
   $$;
   grant execute on function auth.uid(), auth.role() to anon, authenticated, service_role;
 
+  -- Supabase installs extensions into the extensions schema.
+  create schema extensions;
+  grant usage on schema extensions to anon, authenticated, service_role;
+
   grant usage on schema public to anon, authenticated, service_role;
   alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
   alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
@@ -55,8 +60,12 @@ const SUPABASE_SHIM = /* sql */ `
 
 export type Db = PGlite;
 
-export async function createTestDb(opts: { seed?: boolean } = {}): Promise<Db> {
-  const db = new PGlite();
+/**
+ * seed: true loads supabase/seed.sql (legal documents);
+ * seed: 'full' also loads the generated starter catalogue (supabase/seed/catalogue.sql).
+ */
+export async function createTestDb(opts: { seed?: boolean | 'full' } = {}): Promise<Db> {
+  const db = new PGlite({ extensions: { pg_trgm } });
   await db.exec(SUPABASE_SHIM);
   const dir = join(ROOT, 'supabase', 'migrations');
   for (const file of readdirSync(dir).filter((f) => f.endsWith('.sql')).sort()) {
@@ -67,6 +76,7 @@ export async function createTestDb(opts: { seed?: boolean } = {}): Promise<Db> {
     }
   }
   if (opts.seed) await db.exec(readFileSync(join(ROOT, 'supabase', 'seed.sql'), 'utf8'));
+  if (opts.seed === 'full') await db.exec(readFileSync(join(ROOT, 'supabase', 'seed', 'catalogue.sql'), 'utf8'));
   return db;
 }
 

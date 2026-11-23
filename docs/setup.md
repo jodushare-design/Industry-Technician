@@ -34,7 +34,11 @@ npm run check
    ```powershell
    supabase db push
    ```
-3. Load the seed data (registers the 12 legal documents as drafts). In the Supabase dashboard → SQL editor, run the contents of `supabase/seed.sql`.
+3. Load the seed data. In the Supabase dashboard → SQL editor, run:
+   - `supabase/seed.sql`, which registers the 12 legal documents as drafts;
+   - `supabase/seed/catalogue.sql`, which loads the generic starter catalogue as *pending review*.
+
+   Then approve the catalogue in the admin portal → Catalogue, ideally with a rice-mill technician (see [catalogue.md](catalogue.md)).
 4. Generate types from the real schema:
 
    ```powershell
