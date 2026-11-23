@@ -110,3 +110,52 @@ export function DraftLegalBanner() {
 /** Short-form platform disclaimer (docs/legal-review/12-platform-disclaimer.md). Wording pending legal review. */
 export const PLATFORM_DISCLAIMER_SHORT =
   'Providers on this platform are independent businesses responsible for their own work. The platform does not perform repairs or promise repair results.';
+
+/** Notice / error passed back through the URL after a form action (?notice=… / ?error=…). */
+export function Flash({ notice, error }: { notice?: string | string[]; error?: string | string[] }) {
+  const n = Array.isArray(notice) ? notice[0] : notice;
+  const e = Array.isArray(error) ? error[0] : error;
+  if (!n && !e) return null;
+  return <div className="mb-4">{e ? <Alert tone="error">{e}</Alert> : <Alert tone="success">{n}</Alert>}</div>;
+}
+
+export const fieldClass = 'min-h-11 rounded-md border border-line bg-surface px-3 text-base';
+export const smallButtonClass = 'min-h-10 rounded-md border border-line bg-surface px-3 text-sm hover:bg-subtle';
+export const primaryButtonClass = 'min-h-11 rounded-md bg-accent px-4 text-sm font-semibold text-on-accent hover:bg-accent-strong';
+
+/** Labelled native select (works without JavaScript). */
+export function SelectField({
+  label,
+  name,
+  defaultValue,
+  children,
+  hint,
+  required,
+}: {
+  label: string;
+  name: string;
+  defaultValue?: string;
+  children: ReactNode;
+  hint?: string;
+  required?: boolean;
+}) {
+  return (
+    <label className="flex flex-col gap-1 text-sm font-medium">
+      {label}
+      <select name={name} defaultValue={defaultValue} required={required} className={`${fieldClass} font-normal`}>
+        {children}
+      </select>
+      {hint && <span className="text-sm font-normal text-muted">{hint}</span>}
+    </label>
+  );
+}
+
+export function StatusPill({ tone, children }: { tone: 'neutral' | 'warning' | 'success' | 'danger'; children: ReactNode }) {
+  const style = {
+    neutral: 'bg-subtle text-muted',
+    warning: 'bg-warning-soft text-warning',
+    success: 'bg-success-soft text-success',
+    danger: 'bg-danger-soft text-danger',
+  }[tone];
+  return <span className={`inline-block rounded px-2 py-0.5 text-xs font-medium whitespace-nowrap ${style}`}>{children}</span>;
+}

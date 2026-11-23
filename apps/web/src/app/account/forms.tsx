@@ -4,13 +4,27 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import type { MyContext } from "@itm/types";
 import { Alert, Button, TextField } from "@itm/ui";
-import { acceptTermsAction, chooseRoleAction, type ActionState } from "./actions";
+import { acceptTermsAction, chooseRoleAction, saveNameAction, type ActionState } from "./actions";
 
 const initial: ActionState = {};
 
-export function ChooseRoleForm() {
+export function NameForm({ defaultName, defaultEmail }: { defaultName: string; defaultEmail: string }) {
+  const [state, action, pending] = useActionState(saveNameAction, initial);
+  return (
+    <form action={action} className="space-y-4">
+      <TextField id="fullName" name="fullName" label="Your name" defaultValue={defaultName} required error={state.fieldErrors?.fullName?.[0]} autoComplete="name" />
+      <TextField id="email" name="email" label="Email (optional)" type="email" defaultValue={defaultEmail} error={state.fieldErrors?.email?.[0]} autoComplete="email" />
+      {state.error && !state.fieldErrors && <Alert tone="error">{state.error}</Alert>}
+      <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Continue"}</Button>
+    </form>
+  );
+}
+
+export function ChooseRoleForm({ exclude = [] }: { exclude?: ("customer" | "technician" | "company")[] }) {
   const [state, action, pending] = useActionState(chooseRoleAction, initial);
-  const [choice, setChoice] = useState<"customer" | "technician" | "company">("customer");
+  const [choice, setChoice] = useState<"customer" | "technician" | "company">(
+    (["customer", "technician", "company"] as const).find((c) => !exclude.includes(c)) ?? "company",
+  );
 
   const options = [
     { value: "customer", title: "I need a technician", text: "For factories and industrial businesses looking for service providers." },
@@ -22,7 +36,7 @@ export function ChooseRoleForm() {
     <form action={action} className="space-y-4">
       <fieldset className="space-y-3">
         <legend className="mb-2 font-semibold">How will you use the platform?</legend>
-        {options.map((o) => (
+        {options.filter((o) => !exclude.includes(o.value)).map((o) => (
           <label key={o.value} className="flex cursor-pointer gap-3 rounded-md border border-line bg-surface p-4 has-[:checked]:border-accent">
             <input type="radio" name="choice" value={o.value} checked={choice === o.value} onChange={() => setChoice(o.value)} className="mt-1" />
             <span>

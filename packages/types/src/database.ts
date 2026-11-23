@@ -41,6 +41,14 @@ export type CatalogueRelation =
   | 'fault_of'
   | 'skill_for';
 
+export type ProviderKind = 'individual' | 'company' | 'company_member';
+export type ProviderStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'suspended';
+export type SkillLevel = 'basic' | 'experienced' | 'expert';
+export type AvailabilityStatus = 'available' | 'limited' | 'unavailable';
+export type ProviderDocumentType = 'identity' | 'business_registration' | 'gst_certificate' | 'certificate' | 'licence' | 'insurance' | 'work_photo';
+export type DocumentReviewStatus = 'pending' | 'accepted' | 'rejected';
+export type VerificationKind = 'identity' | 'business' | 'certificate' | 'licence' | 'insurance';
+
 type Row<T> = T;
 type NoInsert = never;
 
@@ -269,6 +277,162 @@ export interface Database {
         Update: never;
         Relationships: [];
       };
+      factories: {
+        Row: Row<{
+          id: string; owner_id: string; name: string; address_line: string | null; locality: string; district: string | null;
+          city: string; state: string; pincode: string | null; latitude: number | null; longitude: number | null;
+          gstin: string | null; is_active: boolean; created_at: string; updated_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; owner_id: string; name: string; address_line: string | null; locality: string; district: string | null;
+          city: string; state: string; pincode: string | null; latitude: number | null; longitude: number | null;
+          gstin: string | null; is_active: boolean; created_at: string; updated_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; owner_id: string; name: string; address_line: string | null; locality: string; district: string | null;
+          city: string; state: string; pincode: string | null; latitude: number | null; longitude: number | null;
+          gstin: string | null; is_active: boolean; created_at: string; updated_at: string;
+        }>>;
+        Relationships: [];
+      };
+      customer_machines: {
+        Row: Row<{
+          id: string; factory_id: string; owner_id: string; machine_type_id: string; manufacturer_id: string | null;
+          model_id: string | null; manufacturer_text: string | null; model_text: string | null; label: string | null;
+          year_installed: number | null; serial_number: string | null; notes: string | null; is_active: boolean;
+          created_at: string; updated_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; factory_id: string; owner_id: string; machine_type_id: string; manufacturer_id: string | null;
+          model_id: string | null; manufacturer_text: string | null; model_text: string | null; label: string | null;
+          year_installed: number | null; serial_number: string | null; notes: string | null; is_active: boolean;
+          created_at: string; updated_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; factory_id: string; owner_id: string; machine_type_id: string; manufacturer_id: string | null;
+          model_id: string | null; manufacturer_text: string | null; model_text: string | null; label: string | null;
+          year_installed: number | null; serial_number: string | null; notes: string | null; is_active: boolean;
+          created_at: string; updated_at: string;
+        }>>;
+        Relationships: [];
+      };
+      provider_profiles: {
+        Row: Row<{
+          id: string; kind: ProviderKind; user_id: string | null; organization_id: string | null; display_name: string | null;
+          bio: string | null; years_experience: number | null; languages: string[]; availability: AvailabilityStatus;
+          availability_note: string | null; base_locality: string | null; base_district: string | null;
+          base_latitude: number | null; base_longitude: number | null; service_radius_km: number; service_districts: string[];
+          business_phone: string | null; business_email: string | null; business_address: string | null;
+          business_pincode: string | null; gstin: string | null; registration_number: string | null;
+          status: ProviderStatus; status_reason: string | null; submitted_at: string | null; reviewed_by: string | null;
+          reviewed_at: string | null; archived_at: string | null; created_at: string; updated_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; kind: ProviderKind; user_id: string | null; organization_id: string | null; display_name: string | null;
+          bio: string | null; years_experience: number | null; languages: string[]; availability: AvailabilityStatus;
+          availability_note: string | null; base_locality: string | null; base_district: string | null;
+          base_latitude: number | null; base_longitude: number | null; service_radius_km: number; service_districts: string[];
+          business_phone: string | null; business_email: string | null; business_address: string | null;
+          business_pincode: string | null; gstin: string | null; registration_number: string | null;
+          status: ProviderStatus; status_reason: string | null; submitted_at: string | null; reviewed_by: string | null;
+          reviewed_at: string | null; archived_at: string | null; created_at: string; updated_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; kind: ProviderKind; user_id: string | null; organization_id: string | null; display_name: string | null;
+          bio: string | null; years_experience: number | null; languages: string[]; availability: AvailabilityStatus;
+          availability_note: string | null; base_locality: string | null; base_district: string | null;
+          base_latitude: number | null; base_longitude: number | null; service_radius_km: number; service_districts: string[];
+          business_phone: string | null; business_email: string | null; business_address: string | null;
+          business_pincode: string | null; gstin: string | null; registration_number: string | null;
+          status: ProviderStatus; status_reason: string | null; submitted_at: string | null; reviewed_by: string | null;
+          reviewed_at: string | null; archived_at: string | null; created_at: string; updated_at: string;
+        }>>;
+        Relationships: [];
+      };
+      provider_skills: {
+        Row: Row<{
+          id: string; provider_profile_id: string; catalogue_entity_id: string; years_experience: number; level: SkillLevel;
+          notes: string | null; copied_from_skill_id: string | null; created_at: string; updated_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; provider_profile_id: string; catalogue_entity_id: string; years_experience: number; level: SkillLevel;
+          notes: string | null; copied_from_skill_id: string | null; created_at: string; updated_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; provider_profile_id: string; catalogue_entity_id: string; years_experience: number; level: SkillLevel;
+          notes: string | null; copied_from_skill_id: string | null; created_at: string; updated_at: string;
+        }>>;
+        Relationships: [];
+      };
+      provider_make_model_experience: {
+        Row: Row<{
+          id: string; provider_skill_id: string; manufacturer_id: string | null; model_id: string | null;
+          manufacturer_text: string | null; model_text: string | null; years_experience: number | null; created_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; provider_skill_id: string; manufacturer_id: string | null; model_id: string | null;
+          manufacturer_text: string | null; model_text: string | null; years_experience: number | null; created_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; provider_skill_id: string; manufacturer_id: string | null; model_id: string | null;
+          manufacturer_text: string | null; model_text: string | null; years_experience: number | null; created_at: string;
+        }>>;
+        Relationships: [];
+      };
+      organization_invites: {
+        Row: Row<{
+          id: string; organization_id: string; phone: string; display_name: string | null; invited_by: string;
+          created_at: string; accepted_at: string | null; accepted_user_id: string | null; revoked_at: string | null;
+        }>;
+        Insert: Partial<Row<{
+          id: string; organization_id: string; phone: string; display_name: string | null; invited_by: string;
+          created_at: string; accepted_at: string | null; accepted_user_id: string | null; revoked_at: string | null;
+        }>>;
+        Update: Partial<Row<{
+          id: string; organization_id: string; phone: string; display_name: string | null; invited_by: string;
+          created_at: string; accepted_at: string | null; accepted_user_id: string | null; revoked_at: string | null;
+        }>>;
+        Relationships: [];
+      };
+      provider_documents: {
+        Row: Row<{
+          id: string; provider_profile_id: string; doc_type: ProviderDocumentType; title: string; issuer: string | null;
+          valid_until: string | null; storage_path: string; mime_type: string; size_bytes: number; uploaded_by: string;
+          review_status: DocumentReviewStatus; review_note: string | null; reviewed_by: string | null;
+          reviewed_at: string | null; created_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; provider_profile_id: string; doc_type: ProviderDocumentType; title: string; issuer: string | null;
+          valid_until: string | null; storage_path: string; mime_type: string; size_bytes: number; uploaded_by: string;
+          review_status: DocumentReviewStatus; review_note: string | null; reviewed_by: string | null;
+          reviewed_at: string | null; created_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; provider_profile_id: string; doc_type: ProviderDocumentType; title: string; issuer: string | null;
+          valid_until: string | null; storage_path: string; mime_type: string; size_bytes: number; uploaded_by: string;
+          review_status: DocumentReviewStatus; review_note: string | null; reviewed_by: string | null;
+          reviewed_at: string | null; created_at: string;
+        }>>;
+        Relationships: [];
+      };
+      verification_checks: {
+        Row: Row<{
+          id: string; provider_profile_id: string; kind: VerificationKind; passed: boolean; label: string | null;
+          valid_until: string | null; document_id: string | null; note: string | null; reviewed_by: string;
+          reviewed_at: string; revoked_at: string | null; revoked_by: string | null; revoke_reason: string | null;
+        }>;
+        Insert: Partial<Row<{
+          id: string; provider_profile_id: string; kind: VerificationKind; passed: boolean; label: string | null;
+          valid_until: string | null; document_id: string | null; note: string | null; reviewed_by: string;
+          reviewed_at: string; revoked_at: string | null; revoked_by: string | null; revoke_reason: string | null;
+        }>>;
+        Update: Partial<Row<{
+          id: string; provider_profile_id: string; kind: VerificationKind; passed: boolean; label: string | null;
+          valid_until: string | null; document_id: string | null; note: string | null; reviewed_by: string;
+          reviewed_at: string; revoked_at: string | null; revoked_by: string | null; revoke_reason: string | null;
+        }>>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -330,6 +494,35 @@ export interface Database {
         Args: { p_id: string; p_action: 'create' | 'link' | 'reject'; p_entity?: string | null; p_note?: string | null };
         Returns: string | null;
       };
+      company_invite_member: { Args: { p_org: string; p_phone: string; p_display_name?: string | null }; Returns: string };
+      company_revoke_invite: { Args: { p_invite: string }; Returns: undefined };
+      accept_company_invite: { Args: { p_invite: string }; Returns: string };
+      company_remove_member: { Args: { p_member_profile: string; p_reason: string }; Returns: undefined };
+      copy_company_skill_to_member: {
+        Args: { p_company_skill: string; p_member_profile: string; p_years: number; p_level: SkillLevel };
+        Returns: string;
+      };
+      register_provider_document: {
+        Args: {
+          p_profile: string; p_doc_type: ProviderDocumentType; p_storage_path: string; p_title: string;
+          p_mime_type: string; p_size_bytes: number; p_issuer?: string | null; p_valid_until?: string | null;
+        };
+        Returns: string;
+      };
+      delete_provider_document: { Args: { p_document: string }; Returns: string };
+      provider_profile_gaps: { Args: { p_profile: string }; Returns: string[] };
+      submit_provider_profile: { Args: { p_profile: string }; Returns: undefined };
+      record_verification_check: {
+        Args: {
+          p_profile: string; p_kind: VerificationKind; p_passed: boolean; p_label?: string | null;
+          p_valid_until?: string | null; p_document?: string | null; p_note?: string | null;
+        };
+        Returns: string;
+      };
+      revoke_verification_check: { Args: { p_check: string; p_reason: string }; Returns: undefined };
+      review_provider_document: { Args: { p_document: string; p_accept: boolean; p_note?: string | null }; Returns: undefined };
+      set_provider_status: { Args: { p_profile: string; p_status: ProviderStatus; p_reason?: string | null }; Returns: undefined };
+      get_provider_public: { Args: { p_profile: string }; Returns: Json };
     };
     Enums: {
       app_role: AppRole;
@@ -341,6 +534,13 @@ export interface Database {
       confidence_level: ConfidenceLevel;
       source_type: SourceType;
       catalogue_relation: CatalogueRelation;
+      provider_kind: ProviderKind;
+      provider_status: ProviderStatus;
+      skill_level: SkillLevel;
+      availability_status: AvailabilityStatus;
+      provider_document_type: ProviderDocumentType;
+      document_review_status: DocumentReviewStatus;
+      verification_kind: VerificationKind;
     };
     CompositeTypes: Record<string, never>;
   };

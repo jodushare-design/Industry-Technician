@@ -44,5 +44,7 @@ Then follow [docs/setup.md](docs/setup.md) to connect a Supabase dev project.
 | [compliance-checklist.md](docs/compliance-checklist.md) | Items for counsel and CA |
 | [catalogue.md](docs/catalogue.md) | Machine catalogue: model, rules, import/export, admin workflow |
 | [catalogue-research-worklist.md](docs/catalogue-research-worklist.md) | Research still needed (manufacturers, models, local-language names) |
+| [onboarding.md](docs/onboarding.md) | Customer, technician and company onboarding; verification rules |
+| [build-progress.md](docs/build-progress.md) | Phase status and how to continue |
 | [architecture.md](docs/architecture.md) | Technical architecture and diagrams |
 | [setup.md](docs/setup.md) | Environment and deployment setup |

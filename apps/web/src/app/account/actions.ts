@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { acceptLegalDocuments, createOrganization, registerRole, signOut } from "@itm/api";
+import { acceptCompanyInvite, acceptLegalDocuments, createOrganization, registerRole, signOut, updateMyProfile } from "@itm/api";
 import { reportError, toAppError } from "@itm/core";
 import { createServerSupabase, getSession } from "@itm/next/server";
 
@@ -65,4 +65,34 @@ export async function signOutAction(): Promise<void> {
     reportError(e, { where: "web.signOut" });
   }
   redirect("/");
+}
+
+/** Name and optional email (step 1 for everyone). */
+export async function saveNameAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const { client, context } = await requireSession();
+  try {
+    await updateMyProfile(client, context.profile.id, {
+      fullName: String(form.get("fullName") ?? ""),
+      email: String(form.get("email") ?? ""),
+      preferredLanguage: (String(form.get("preferredLanguage") ?? "en") || "en") as "en",
+    });
+  } catch (e) {
+    return fail(e, "web.account.saveName");
+  }
+  revalidatePath("/account");
+  return {};
+}
+
+/** Accept a company's invitation to join its team (matched to this user's verified number). */
+export async function acceptInviteAction(form: FormData): Promise<void> {
+  const { client } = await requireSession();
+  let target = "/account";
+  try {
+    const profileId = await acceptCompanyInvite(client, String(form.get("inviteId")));
+    target = `/account/provider/${profileId}?notice=${encodeURIComponent("You have joined the team. Add your own skills below.")}`;
+  } catch (e) {
+    target = `/account?error=${encodeURIComponent(fail(e, "web.account.acceptInvite").error ?? "Could not accept")}`;
+  }
+  revalidatePath("/account");
+  redirect(target);
 }

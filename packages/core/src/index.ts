@@ -5,3 +5,4 @@ export * from './money';
 export * from './copy-rules';
 export * from './logger';
 export * from './catalogue';
+export * from './onboarding';
