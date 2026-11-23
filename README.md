@@ -44,6 +44,8 @@ Then follow [docs/setup.md](docs/setup.md) to connect a Supabase dev project.
 | [compliance-checklist.md](docs/compliance-checklist.md) | Items for counsel and CA |
 | [legal-review/legal-review-checklist.md](docs/legal-review/legal-review-checklist.md) | Questions for the reviewing lawyer, by area |
 | [security.md](docs/security.md) | Security controls, guarantees, tests and known gaps |
+| [pilot-test-plan.md](docs/pilot-test-plan.md) | Test categories, coverage, manual phone and slow-network scripts |
+| [release/](docs/release/) | Deployment, backups, test results, security review, known limitations, pilot onboarding |
 | [catalogue.md](docs/catalogue.md) | Machine catalogue: model, rules, import/export, admin workflow |
 | [catalogue-research-worklist.md](docs/catalogue-research-worklist.md) | Research still needed (manufacturers, models, local-language names) |
 | [onboarding.md](docs/onboarding.md) | Customer, technician and company onboarding; verification rules |

@@ -122,7 +122,7 @@ Scan the QR code with **Expo Go** on an Android phone (same Wi-Fi). No Android S
    insert into public.user_roles (user_id, role)
    select id, 'platform_admin' from public.profiles where phone = '+919XXXXXXXXX';
    ```
-3. Reload the admin portal. Further staff are granted from the database function `grant_staff_role` (admin UI in Prompt 11).
+3. Reload the admin portal. For further staff, see [release/deployment.md §4](release/deployment.md#4-admin-access-setup). There is no staff-role screen yet.
 
 ## 7. RLS tests against Supabase (before each release)
 
@@ -133,7 +133,7 @@ The PGlite suite proves the SQL logic. Before a release, repeat the key isolatio
 - suspended user;
 - audit log append-only.
 
-A scripted version arrives with Prompt 11 security testing.
+The same guarantees are scripted for PGlite in `supabase/tests/security.test.ts`. Repeat them by hand against the hosted project and record the result in [release/test-results.md](release/test-results.md).
 
 ## 8. Android builds (later phase)
 
