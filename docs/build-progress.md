@@ -15,8 +15,8 @@ The working log for the phased build in the "Claude Code Master Prompt Sequence"
 | In-app chat and optional WhatsApp hand-off | 7 | Done (web; Android chat pending) | see git log |
 | Estimates and customer approval | 8 | Done (web) | see git log |
 | Spare-parts coordination | 9 | Done (web) | see git log |
-| Job states, completion, complaints | 10 | **In progress** | |
-| Admin, compliance, security tests | 11 | Not started | |
+| Job states, completion, complaints | 10 | Done (web + admin) | see git log |
+| Admin, compliance, security tests | 11 | **In progress** | |
 | Pilot test plan and release docs | 12 | Not started | |
 
 ## How to continue

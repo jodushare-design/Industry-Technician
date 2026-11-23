@@ -152,6 +152,13 @@ export default async function ProviderRequestPage({ params, searchParams }: Page
         </Card>
       )}
 
+      {r.selected_you && (
+        <Card>
+          <h2 className="mb-1 font-semibold">Job progress</h2>
+          <Link href={"/work/" + id + "/job"} className={smallButtonClass + " inline-flex items-center"}>Schedule, progress and completion report</Link>
+        </Card>
+      )}
+
       {activeConv && (
         <Card>
           <h2 id="chat" className="mb-2 font-semibold">Messages with {r.customer_name}</h2>

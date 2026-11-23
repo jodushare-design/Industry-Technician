@@ -66,6 +66,10 @@ export type PartCompatibility = 'unknown' | 'confirmed_by_provider' | 'confirmed
 export type PartAvailability = 'unknown' | 'in_stock' | 'to_order' | 'unavailable';
 export type PartStage = 'identified' | 'awaiting_approval' | 'approved' | 'rejected' | 'arranged' | 'received' | 'installed' | 'cancelled';
 
+export type ComplaintCategory = 'no_show' | 'delay' | 'price_dispute' | 'work_quality' | 'parts_issue' | 'conduct' | 'safety_incident' | 'data_privacy' | 'platform_issue' | 'other';
+export type ComplaintStatus = 'open' | 'acknowledged' | 'in_progress' | 'resolved' | 'closed';
+export type ComplaintResolution = 'resolved_between_parties' | 'provider_action_taken' | 'account_action_taken' | 'referred_to_authorities' | 'no_action_needed' | 'withdrawn_by_complainant';
+
 type Row<T> = T;
 type NoInsert = never;
 
@@ -457,6 +461,7 @@ export interface Database {
           manufacturer_text: string | null; model_text: string | null; service_type: ServiceType; symptoms: string[];
           description: string; urgency: RequestUrgency; preferred_date: string | null; status: JobStatus;
           selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null;
+          scheduled_for: string | null; schedule_note: string | null;
         }>;
         Insert: Partial<Row<{
           id: string; reference: string; customer_id: string; factory_id: string; customer_machine_id: string | null;
@@ -657,6 +662,78 @@ export interface Database {
         Update: Partial<Row<{ id: number; part_id: string; from_stage: PartStage | null; to_stage: PartStage; actor_id: string | null; note: string | null; created_at: string }>>;
         Relationships: [];
       };
+      site_safety_acks: {
+        Row: Row<{ request_id: string; side: 'customer' | 'provider'; items: Json; acknowledged_by: string; acknowledged_at: string }>;
+        Insert: Partial<Row<{ request_id: string; side: 'customer' | 'provider'; items: Json; acknowledged_by: string; acknowledged_at: string }>>;
+        Update: Partial<Row<{ request_id: string; side: 'customer' | 'provider'; items: Json; acknowledged_by: string; acknowledged_at: string }>>;
+        Relationships: [];
+      };
+      job_photos: {
+        Row: Row<{ id: string; request_id: string; phase: 'before' | 'after'; storage_path: string; uploaded_by: string; created_at: string }>;
+        Insert: Partial<Row<{ id: string; request_id: string; phase: 'before' | 'after'; storage_path: string; uploaded_by: string; created_at: string }>>;
+        Update: Partial<Row<{ id: string; request_id: string; phase: 'before' | 'after'; storage_path: string; uploaded_by: string; created_at: string }>>;
+        Relationships: [];
+      };
+      completion_reports: {
+        Row: Row<{
+          id: string; request_id: string; provider_profile_id: string; fault_identified: string; work_performed: string; parts_used: Json;
+          parts_note: string | null; remaining_issues: string | null; recommendations: string | null; completed_on: string;
+          submitted_by: string; submitted_at: string; content_hash: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; request_id: string; provider_profile_id: string; fault_identified: string; work_performed: string; parts_used: Json;
+          parts_note: string | null; remaining_issues: string | null; recommendations: string | null; completed_on: string;
+          submitted_by: string; submitted_at: string; content_hash: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; request_id: string; provider_profile_id: string; fault_identified: string; work_performed: string; parts_used: Json;
+          parts_note: string | null; remaining_issues: string | null; recommendations: string | null; completed_on: string;
+          submitted_by: string; submitted_at: string; content_hash: string;
+        }>>;
+        Relationships: [];
+      };
+      job_feedback: {
+        Row: Row<{ request_id: string; rating: number | null; comment: string | null; created_by: string; created_at: string }>;
+        Insert: Partial<Row<{ request_id: string; rating: number | null; comment: string | null; created_by: string; created_at: string }>>;
+        Update: Partial<Row<{ request_id: string; rating: number | null; comment: string | null; created_by: string; created_at: string }>>;
+        Relationships: [];
+      };
+      complaints: {
+        Row: Row<{
+          id: string; reference: string; request_id: string | null; raised_by: string; raised_side: 'customer' | 'provider' | 'other';
+          against_provider_id: string | null; category: ComplaintCategory; severity: 'normal' | 'high' | 'critical'; description: string;
+          status: ComplaintStatus; assigned_to: string | null; escalated: boolean; ack_due_at: string; resolve_due_at: string;
+          acknowledged_at: string | null; resolved_at: string | null; resolution: ComplaintResolution | null; resolution_notes: string | null;
+          created_at: string; updated_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; reference: string; request_id: string | null; raised_by: string; raised_side: 'customer' | 'provider' | 'other';
+          against_provider_id: string | null; category: ComplaintCategory; severity: 'normal' | 'high' | 'critical'; description: string;
+          status: ComplaintStatus; assigned_to: string | null; escalated: boolean; ack_due_at: string; resolve_due_at: string;
+          acknowledged_at: string | null; resolved_at: string | null; resolution: ComplaintResolution | null; resolution_notes: string | null;
+          created_at: string; updated_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; reference: string; request_id: string | null; raised_by: string; raised_side: 'customer' | 'provider' | 'other';
+          against_provider_id: string | null; category: ComplaintCategory; severity: 'normal' | 'high' | 'critical'; description: string;
+          status: ComplaintStatus; assigned_to: string | null; escalated: boolean; ack_due_at: string; resolve_due_at: string;
+          acknowledged_at: string | null; resolved_at: string | null; resolution: ComplaintResolution | null; resolution_notes: string | null;
+          created_at: string; updated_at: string;
+        }>>;
+        Relationships: [];
+      };
+      complaint_events: {
+        Row: Row<{ id: number; complaint_id: string; actor_id: string | null; kind: string; visibility: 'parties' | 'staff'; body: string | null; created_at: string }>;
+        Insert: Partial<Row<{ id: number; complaint_id: string; actor_id: string | null; kind: string; visibility: 'parties' | 'staff'; body: string | null; created_at: string }>>;
+        Update: Partial<Row<{ id: number; complaint_id: string; actor_id: string | null; kind: string; visibility: 'parties' | 'staff'; body: string | null; created_at: string }>>;
+        Relationships: [];
+      };
+      complaint_attachments: {
+        Row: Row<{ id: string; complaint_id: string; storage_path: string; mime_type: string; size_bytes: number; uploaded_by: string; created_at: string }>;
+        Insert: Partial<Row<{ id: string; complaint_id: string; storage_path: string; mime_type: string; size_bytes: number; uploaded_by: string; created_at: string }>>;
+        Update: Partial<Row<{ id: string; complaint_id: string; storage_path: string; mime_type: string; size_bytes: number; uploaded_by: string; created_at: string }>>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -794,6 +871,22 @@ export interface Database {
       decide_part: { Args: { p_part: string; p_approve: boolean; p_hash: string; p_arranged_by?: string | null; p_note?: string | null }; Returns: undefined };
       advance_part: { Args: { p_part: string; p_stage: PartStage; p_note?: string | null }; Returns: undefined };
       register_part_photo: { Args: { p_part: string; p_storage_path: string }; Returns: undefined };
+      schedule_job: { Args: { p_request: string; p_when: string; p_note?: string | null }; Returns: undefined };
+      acknowledge_site_safety: { Args: { p_request: string; p_items: Json }; Returns: undefined };
+      update_job_progress: { Args: { p_request: string; p_status: JobStatus; p_note?: string | null }; Returns: undefined };
+      add_job_photo: { Args: { p_request: string; p_phase: string; p_storage_path: string }; Returns: string };
+      submit_completion_report: { Args: { p_request: string; p_fields: Json }; Returns: string };
+      confirm_completion: { Args: { p_request: string; p_rating?: number | null; p_comment?: string | null }; Returns: undefined };
+      open_complaint: { Args: { p_request: string | null; p_category: ComplaintCategory; p_description: string; p_against_provider?: string | null }; Returns: string };
+      report_concern: { Args: { p_request: string; p_category: ComplaintCategory; p_description: string }; Returns: string };
+      add_complaint_message: { Args: { p_complaint: string; p_body: string; p_internal?: boolean }; Returns: undefined };
+      register_complaint_attachment: { Args: { p_complaint: string; p_storage_path: string; p_mime_type: string; p_size_bytes: number }; Returns: string };
+      acknowledge_complaint: { Args: { p_complaint: string; p_message?: string | null }; Returns: undefined };
+      assign_complaint: { Args: { p_complaint: string; p_staff: string }; Returns: undefined };
+      escalate_complaint: { Args: { p_complaint: string; p_reason: string }; Returns: undefined };
+      set_complaint_status: { Args: { p_complaint: string; p_status: ComplaintStatus; p_resolution?: ComplaintResolution | null; p_notes?: string | null }; Returns: undefined };
+      close_disputed_job: { Args: { p_request: string; p_note: string }; Returns: undefined };
+      staff_read_conversation: { Args: { p_complaint: string; p_conversation: string }; Returns: Json };
     };
     Enums: {
       app_role: AppRole;
@@ -822,6 +915,9 @@ export interface Database {
       part_compatibility: PartCompatibility;
       part_availability: PartAvailability;
       part_stage: PartStage;
+      complaint_category: ComplaintCategory;
+      complaint_status: ComplaintStatus;
+      complaint_resolution: ComplaintResolution;
     };
     CompositeTypes: Record<string, never>;
   };

@@ -9,3 +9,4 @@ export * from './onboarding';
 export * from './requests';
 export * from './estimates';
 export * from './parts';
+export * from './complaints';

@@ -50,7 +50,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <li><Link href="/legal/technician_terms" className="hover:underline">Technician Terms</Link></li>
               <li><Link href="/legal/company_terms" className="hover:underline">Service Company Terms</Link></li>
               <li><Link href="/legal/privacy_policy" className="hover:underline">Privacy</Link></li>
-              <li><Link href="/legal/grievance_policy" className="hover:underline">Grievance Officer &amp; complaints</Link></li>
+              <li><Link href="/complaints" className="hover:underline">Complaints</Link></li>
+              <li><Link href="/legal/grievance_policy" className="hover:underline">Grievance Officer</Link></li>
             </ul>
           </div>
         </footer>

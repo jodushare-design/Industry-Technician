@@ -127,6 +127,16 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
         </Card>
       )}
 
+      {!["submitted", "finding_providers", "provider_contacted", "discussion", "estimate_sent", "awaiting_approval", "cancelled"].includes(r.status) && (
+        <Card>
+          <h2 className="mb-1 font-semibold">Job progress</h2>
+          <p className="mb-2 text-sm text-muted">Visit, site safety, the provider's completion report and your confirmation.</p>
+          <Link className="underline" href={"/requests/" + id + "/job"}>Open job progress</Link>
+          {" · "}
+          <Link className="underline" href={"/complaints/new?request=" + id}>Make a complaint</Link>
+        </Card>
+      )}
+
       {(invitations ?? []).length > 0 && (
         <Card>
           <h2 className="mb-3 font-semibold">Providers you contacted</h2>

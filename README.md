@@ -49,6 +49,8 @@ Then follow [docs/setup.md](docs/setup.md) to connect a Supabase dev project.
 | [chat.md](docs/chat.md) | In-app chat, notifications, optional WhatsApp hand-off and future WhatsApp design |
 | [estimates.md](docs/estimates.md) | Estimates, revisions and customer approval |
 | [parts.md](docs/parts.md) | Spare-parts coordination |
+| [completion-and-complaints.md](docs/completion-and-complaints.md) | Job progress, completion report, complaints |
+| [incident-escalation.md](docs/incident-escalation.md) | Safety incident procedure (draft) |
 | [build-progress.md](docs/build-progress.md) | Phase status and how to continue |
 | [architecture.md](docs/architecture.md) | Technical architecture and diagrams |
 | [setup.md](docs/setup.md) | Environment and deployment setup |
