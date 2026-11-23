@@ -16,7 +16,7 @@ export function SuggestForm({ defaultName }: { defaultName: string }) {
   }
 
   return (
-    <form action={action} className="space-y-3 rounded-lg border border-line bg-surface p-4">
+    <form action={action} className="space-y-3 rounded-2xl bg-surface shadow-card p-4">
       <label className="flex flex-col gap-1 text-sm font-medium">
         What are you suggesting?
         <select name="kind" defaultValue="machine_type" className="min-h-11 rounded-md border border-line bg-surface px-3 text-base font-normal">

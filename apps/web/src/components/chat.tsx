@@ -45,7 +45,7 @@ export function Chat({ conversationId, myUserId, mySide, open, reference, otherN
   const [loadError, setLoadError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const recorder = useRef<MediaRecorder | null>(null);
-  const bottom = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLDivElement>(null);
 
   const resolveUrls = useCallback(
     async (ms: Message[]) => {
@@ -96,7 +96,12 @@ export function Chat({ conversationId, myUserId, mySide, open, reference, otherN
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
-  useEffect(() => bottom.current?.scrollIntoView({ block: "end" }), [messages.length, pending.length]);
+  // Scroll only the message list (not the page). Block body: an effect must return
+  // nothing or a clean-up function.
+  useEffect(() => {
+    const el = list.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages.length, pending.length]);
 
   async function deliver(p: Pending) {
     setPending((ps) => [...ps.filter((x) => x.clientId !== p.clientId), { ...p, state: "sending", error: undefined }]);
@@ -145,8 +150,8 @@ export function Chat({ conversationId, myUserId, mySide, open, reference, otherN
   const otherSideLabel = mySide === "customer" ? otherName : "Customer";
 
   return (
-    <div className="flex flex-col rounded-lg border border-line bg-surface">
-      <div className="max-h-[28rem] min-h-48 space-y-2 overflow-y-auto p-3" aria-live="polite" aria-label="Messages">
+    <div className="flex flex-col rounded-2xl bg-surface shadow-card">
+      <div ref={list} className="max-h-[28rem] min-h-48 space-y-2 overflow-y-auto p-3" aria-live="polite" aria-label="Messages">
         {loadError && <Alert tone="error">{loadError}</Alert>}
         {messages.map((m) => {
           if (m.kind === "system") {
@@ -196,7 +201,6 @@ export function Chat({ conversationId, myUserId, mySide, open, reference, otherN
           </div>
         ))}
         {messages.length === 0 && pending.length === 0 && !loadError && <p className="text-sm text-muted">No messages yet.</p>}
-        <div ref={bottom} />
       </div>
 
       {open ? (

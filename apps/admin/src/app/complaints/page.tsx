@@ -27,7 +27,7 @@ export default async function AdminComplaintsPage({ searchParams }: PageProps<"/
       <PageHeader title="Complaints" description={`Acknowledge within 24 hours; resolution target 15 days. ${overdue} overdue.`} />
       <Flash notice={sp.notice} error={sp.error} />
       <p className="mb-3 text-sm">{show === "open" ? <Link className="underline" href="/complaints?show=all">Show all</Link> : <Link className="underline" href="/complaints">Show open only</Link>}</p>
-      <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+      <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
         <table className="w-full text-left text-sm">
           <thead className="bg-subtle">
             <tr><th className="px-3 py-2">Reference</th><th className="px-3 py-2">Category</th><th className="px-3 py-2">Severity</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Deadline</th><th className="px-3 py-2">Opened</th></tr>

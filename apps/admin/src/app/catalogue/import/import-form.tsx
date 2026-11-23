@@ -12,7 +12,7 @@ export function ImportForm() {
 
   return (
     <div className="space-y-4">
-      <form ref={formRef} action={action} className="flex flex-wrap items-end gap-3 rounded-lg border border-line bg-surface p-4">
+      <form ref={formRef} action={action} className="flex flex-wrap items-end gap-3 rounded-2xl bg-surface shadow-card p-4">
         <label className="flex flex-col text-sm">
           File (.csv or .json, up to 5 MB)
           <input type="file" name="file" accept=".csv,.json,text/csv,application/json" required className={inputClass} />
@@ -52,7 +52,7 @@ export function ImportForm() {
             {r.dry_run && r.errors > 0 && " — fix the errors before importing."}
             {!r.dry_run && " — new records are waiting for approval on the Records page."}
           </Alert>
-          <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+          <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
             <table className="w-full text-left text-sm">
               <thead className="bg-subtle">
                 <tr>

@@ -33,7 +33,7 @@ export default async function WorkInboxPage({ searchParams }: PageProps<"/work">
         <ul className="space-y-3">
           {items.map((i) => (
             <li key={i.invitation_id}>
-              <Link href={`/work/${i.request_id}`} className="block rounded-lg border border-line bg-surface p-4 hover:border-accent">
+              <Link href={`/work/${i.request_id}`} className="block rounded-2xl bg-surface shadow-card p-4 transition hover:shadow-raised hover:-translate-y-0.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-semibold">{i.machine_type} · {SERVICE_TYPE_LABELS[i.service_type as keyof typeof SERVICE_TYPE_LABELS]}</span>
                   <span className="flex gap-2">

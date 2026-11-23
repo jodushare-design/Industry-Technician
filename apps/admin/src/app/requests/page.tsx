@@ -33,7 +33,7 @@ export default async function AdminRequestsPage() {
   return (
     <div>
       <PageHeader title="Service requests" description="Latest 200. Read-only: customers choose and contact providers themselves." />
-      <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+      <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
         <table className="w-full text-left text-sm">
           <thead className="bg-subtle">
             <tr>

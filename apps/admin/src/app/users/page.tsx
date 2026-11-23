@@ -33,7 +33,7 @@ export default async function UsersPage() {
   return (
     <div>
       <PageHeader title="Users & roles" description="Latest 200 accounts. Status changes are recorded in the audit log." />
-      <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+      <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
         <table className="w-full text-left text-sm">
           <thead className="bg-subtle">
             <tr>

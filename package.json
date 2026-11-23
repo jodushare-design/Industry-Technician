@@ -19,7 +19,10 @@
     "build:admin": "npm run build -w admin",
     "check": "npm run guard && npm run typecheck && npm test",
     "db:types": "supabase gen types typescript --linked --schema public > packages/types/src/database.generated.ts",
-    "catalogue:build": "node scripts/catalogue/build-seed.mjs"
+    "catalogue:build": "node scripts/catalogue/build-seed.mjs",
+    "demo": "node scripts/demo/server.mjs",
+    "demo:reset": "node scripts/demo/server.mjs --reset",
+    "demo:env": "node scripts/demo/env.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.17",

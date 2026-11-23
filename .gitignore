@@ -31,3 +31,6 @@ supabase/.temp/
 npm-debug.log*
 .vercel
 .claude/settings.local.json
+
+# Local demo backend data (scripts/demo)
+.data-demo/

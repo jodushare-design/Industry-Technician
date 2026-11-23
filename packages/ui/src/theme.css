@@ -1,0 +1,198 @@
+/*
+ * Shared theme for the web and admin apps, following Apple's Human Interface
+ * Guidelines: system font, Apple system colours, grouped backgrounds, large
+ * titles, continuous rounded corners, soft depth, 44pt touch targets, and a
+ * full dark mode. Import after "tailwindcss" in each app's globals.css.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Grouped backgrounds and surfaces (iOS systemGroupedBackground) */
+  --background: #f2f2f7;
+  --surface: #ffffff;
+  --subtle: #f2f2f7;          /* systemGray6 fill */
+  --elevated: rgba(255, 255, 255, 0.72);
+
+  /* Labels */
+  --foreground: #1c1c1e;
+  --muted: rgba(60, 60, 67, 0.62);
+  --line: rgba(60, 60, 67, 0.16);   /* separator */
+
+  /* Apple system colours */
+  --blue: #007aff;
+  --green: #34c759;
+  --orange: #ff9500;
+  --red: #ff3b30;
+  --purple: #af52de;
+  --pink: #ff2d55;
+  --teal: #30b0c7;
+  --indigo: #5856d6;
+  --yellow: #ffcc00;
+  --mint: #00c7be;
+
+  /* Tinted fills (12% of each colour) */
+  --blue-soft: rgba(0, 122, 255, 0.12);
+  --green-soft: rgba(52, 199, 89, 0.14);
+  --orange-soft: rgba(255, 149, 0, 0.14);
+  --red-soft: rgba(255, 59, 48, 0.12);
+  --purple-soft: rgba(175, 82, 222, 0.12);
+  --pink-soft: rgba(255, 45, 85, 0.12);
+  --teal-soft: rgba(48, 176, 199, 0.14);
+  --indigo-soft: rgba(88, 86, 214, 0.12);
+
+  /* Semantic roles used by the components */
+  --accent: var(--blue);
+  --accent-strong: #0062cc;
+  --on-accent: #ffffff;
+  --danger: #d70015;         /* accessible red text on light */
+  --danger-soft: var(--red-soft);
+  --warning: #c93400;        /* accessible orange text on light */
+  --warning-soft: var(--orange-soft);
+  --success: #248a3d;        /* accessible green text on light */
+  --success-soft: var(--green-soft);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-raised: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.10);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --surface: #1c1c1e;
+    --subtle: #2c2c2e;
+    --elevated: rgba(28, 28, 30, 0.72);
+    --foreground: #f2f2f7;
+    --muted: rgba(235, 235, 245, 0.62);
+    --line: rgba(84, 84, 88, 0.6);
+
+    --blue: #0a84ff;
+    --green: #30d158;
+    --orange: #ff9f0a;
+    --red: #ff453a;
+    --purple: #bf5af2;
+    --pink: #ff375f;
+    --teal: #40c8e0;
+    --indigo: #5e5ce6;
+    --yellow: #ffd60a;
+    --mint: #63e6e2;
+
+    --blue-soft: rgba(10, 132, 255, 0.2);
+    --green-soft: rgba(48, 209, 88, 0.2);
+    --orange-soft: rgba(255, 159, 10, 0.2);
+    --red-soft: rgba(255, 69, 58, 0.2);
+    --purple-soft: rgba(191, 90, 242, 0.2);
+    --pink-soft: rgba(255, 55, 95, 0.2);
+    --teal-soft: rgba(64, 200, 224, 0.2);
+    --indigo-soft: rgba(94, 92, 230, 0.2);
+
+    --accent-strong: #409cff;
+    --on-accent: #ffffff;
+    --danger: #ff6961;
+    --warning: #ffb340;
+    --success: #30d158;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-raised: 0 8px 28px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-elevated: var(--elevated);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+
+  --color-ios-blue: var(--blue);
+  --color-ios-green: var(--green);
+  --color-ios-orange: var(--orange);
+  --color-ios-red: var(--red);
+  --color-ios-purple: var(--purple);
+  --color-ios-pink: var(--pink);
+  --color-ios-teal: var(--teal);
+  --color-ios-indigo: var(--indigo);
+  --color-ios-yellow: var(--yellow);
+  --color-ios-mint: var(--mint);
+  --color-blue-soft: var(--blue-soft);
+  --color-green-soft: var(--green-soft);
+  --color-orange-soft: var(--orange-soft);
+  --color-red-soft: var(--red-soft);
+  --color-purple-soft: var(--purple-soft);
+  --color-pink-soft: var(--pink-soft);
+  --color-teal-soft: var(--teal-soft);
+  --color-indigo-soft: var(--indigo-soft);
+
+  /* Apple-like continuous corners everywhere (existing rounded-* classes pick these up) */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.375rem;
+  --radius-2xl: 1.75rem;
+
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI Variable", "Segoe UI",
+    Roboto, "Noto Sans", "Noto Sans Telugu", "Noto Sans Devanagari", system-ui, sans-serif;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  letter-spacing: -0.003em;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+/* Inputs: filled, rounded, blue focus ring (iOS style) */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+select,
+textarea {
+  border-radius: var(--radius-md);
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--accent);
+  width: 1.15rem;
+  height: 1.15rem;
+}
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 2px;
+}
+
+/* Tables read as grouped lists */
+table thead {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -12,7 +12,7 @@ export default async function SignInPage({ searchParams }: PageProps<"/sign-in">
     <div className="mx-auto max-w-md">
       <PageHeader title="Staff sign-in" description="Platform staff only." />
       {isSupabaseConfigured() ? (
-        <SignInForm next={next} />
+        <SignInForm next={next} audience="admin" />
       ) : (
         <Alert tone="warning" title="Sign-in is not set up yet">
           The Supabase project has not been configured for this environment. See docs/setup.md.

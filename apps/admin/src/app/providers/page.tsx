@@ -57,7 +57,7 @@ export default async function ProvidersPage({ searchParams }: PageProps<"/provid
         ))}
         <Link href={link({ status: "all" })} className="rounded border border-line bg-surface px-2 py-1">All</Link>
       </nav>
-      <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+      <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
         <table className="w-full text-left text-sm">
           <thead className="bg-subtle">
             <tr><th className="px-3 py-2">Name</th><th className="px-3 py-2">Kind</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Base</th><th className="px-3 py-2">Submitted</th></tr>

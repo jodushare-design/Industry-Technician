@@ -36,7 +36,7 @@ export default async function SuggestionsPage({ searchParams }: PageProps<"/cata
       {data?.length === 0 && <p className="text-muted">No suggestions to review.</p>}
       <ul className="space-y-3">
         {(data ?? []).map((s) => (
-          <li key={s.id} className="rounded-lg border border-line bg-surface p-4 text-sm">
+          <li key={s.id} className="rounded-2xl bg-surface shadow-card p-4 text-sm">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p>
                 <span className="font-semibold">{s.name}</span> <span className="text-muted">· {CATALOGUE_KIND_LABELS[s.kind]}</span>

@@ -24,7 +24,7 @@ export default async function CustomersPage() {
   return (
     <div>
       <PageHeader title="Customers" description="Industrial customers and their factories. Latest 300." />
-      <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+      <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
         <table className="w-full text-left text-sm">
           <thead className="bg-subtle">
             <tr><th className="px-3 py-2">Name</th><th className="px-3 py-2">Mobile</th><th className="px-3 py-2">Factories</th><th className="px-3 py-2">Machines</th><th className="px-3 py-2">Status</th></tr>

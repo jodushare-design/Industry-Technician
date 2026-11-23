@@ -29,7 +29,7 @@ export default async function ComplaintsPage({ searchParams }: PageProps<"/compl
         <ul className="space-y-2">
           {(data ?? []).map((c) => (
             <li key={c.id}>
-              <Link href={`/complaints/${c.id}`} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surface p-4 hover:border-accent">
+              <Link href={`/complaints/${c.id}`} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-surface shadow-card p-4 transition hover:shadow-raised hover:-translate-y-0.5">
                 <span><span className="font-semibold">{c.reference}</span> · {COMPLAINT_CATEGORY_LABELS[c.category]}</span>
                 <StatusPill tone={c.status === "resolved" || c.status === "closed" ? "success" : "warning"}>{COMPLAINT_STATUS_LABELS[c.status]}</StatusPill>
               </Link>

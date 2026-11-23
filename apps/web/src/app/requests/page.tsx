@@ -36,7 +36,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/request
         <ul className="space-y-3">
           {(requests ?? []).map((r) => (
             <li key={r.id}>
-              <Link href={`/requests/${r.id}`} className="block rounded-lg border border-line bg-surface p-4 hover:border-accent">
+              <Link href={`/requests/${r.id}`} className="block rounded-2xl bg-surface shadow-card p-4 transition hover:shadow-raised hover:-translate-y-0.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-semibold">{nameOf.get(r.machine_type_id)} · {SERVICE_TYPE_LABELS[r.service_type]}</span>
                   <StatusPill tone={["closed", "cancelled"].includes(r.status) ? "neutral" : r.status === "disputed" ? "danger" : "warning"}>{JOB_STATUS_LABELS[r.status]}</StatusPill>

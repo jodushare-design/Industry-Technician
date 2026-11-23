@@ -34,7 +34,7 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/no
       {items.length === 0 ? (
         <Card><p className="text-muted">Nothing yet.</p></Card>
       ) : (
-        <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
+        <ul className="divide-y divide-line rounded-2xl bg-surface shadow-card">
           {items.map((n) => (
             <li key={n.id} className={`p-3 ${n.read_at ? "" : "bg-subtle"}`}>
               {n.link ? <Link href={n.link} className="font-medium hover:underline">{n.title}</Link> : <span className="font-medium">{n.title}</span>}

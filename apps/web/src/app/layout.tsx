@@ -10,48 +10,66 @@ export const metadata: Metadata = {
     "Find independent industrial technicians and service companies in Hyderabad. Chat, receive provider estimates and keep a record of your approvals.",
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1 };
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2f2f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+};
+
+const NAV = [
+  ["/machines", "Machines"],
+  ["/requests", "My requests"],
+  ["/work", "Work"],
+] as const;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="h-full">
       <body className="flex min-h-full flex-col">
-        <header className="border-b border-line bg-surface">
-          <nav className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-            <Link href="/" className="font-bold">
-              Industrial Technician Marketplace
+        {process.env.NEXT_PUBLIC_DEMO_MODE === "1" && (
+          <div className="bg-gradient-to-r from-ios-orange to-ios-pink px-4 py-1.5 text-center text-xs font-semibold text-white">
+            LOCAL DEMO — fictional people and data. Nothing here is real.
+          </div>
+        )}
+        {/* Frosted, sticky navigation bar */}
+        <header className="sticky top-0 z-30 border-b border-line bg-elevated backdrop-blur-xl backdrop-saturate-150">
+          <nav className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
+            <Link href="/" className="flex items-center gap-2.5 font-semibold">
+              <span aria-hidden className="flex size-8 items-center justify-center rounded-[9px] bg-gradient-to-br from-ios-blue to-ios-indigo text-sm font-bold text-white shadow-sm">
+                IT
+              </span>
+              <span className="text-[17px] tracking-tight">Industrial Technician Marketplace</span>
             </Link>
-            <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm">
-              <Link href="/machines" className="hover:underline">
-                Machines
-              </Link>
-              <Link href="/requests" className="hover:underline">
-                My requests
-              </Link>
-              <Link href="/work" className="hover:underline">
-                Work
-              </Link>
-              <NotificationBell />
-              <Link href="/account" className="hover:underline">
+            <div className="flex flex-wrap items-center gap-1 text-[15px]">
+              {NAV.map(([href, label]) => (
+                <Link key={href} href={href} className="rounded-full px-3 py-1.5 text-foreground/80 transition hover:bg-subtle hover:text-foreground">
+                  {label}
+                </Link>
+              ))}
+              <span className="px-2"><NotificationBell /></span>
+              <Link href="/account" className="rounded-full bg-blue-soft px-3.5 py-1.5 font-semibold text-accent transition hover:brightness-95">
                 My account
               </Link>
             </div>
           </nav>
         </header>
 
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
+        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">{children}</main>
 
-        <footer className="border-t border-line bg-surface">
-          <div className="mx-auto max-w-5xl space-y-3 px-4 py-6 text-sm text-muted">
-            <p>{PLATFORM_DISCLAIMER_SHORT}</p>
-            <ul className="flex flex-wrap gap-x-4 gap-y-1">
-              <li><Link href="/legal/marketplace_description" className="hover:underline">Marketplace Service Description</Link></li>
-              <li><Link href="/legal/customer_terms" className="hover:underline">Customer Terms</Link></li>
-              <li><Link href="/legal/technician_terms" className="hover:underline">Technician Terms</Link></li>
-              <li><Link href="/legal/company_terms" className="hover:underline">Service Company Terms</Link></li>
-              <li><Link href="/legal/privacy_policy" className="hover:underline">Privacy</Link></li>
-              <li><Link href="/complaints" className="hover:underline">Complaints</Link></li>
-              <li><Link href="/legal/grievance_policy" className="hover:underline">Grievance Officer</Link></li>
+        <footer className="mt-8 border-t border-line">
+          <div className="mx-auto max-w-5xl space-y-3 px-4 py-8 text-[13px] text-muted">
+            <p className="max-w-3xl">{PLATFORM_DISCLAIMER_SHORT}</p>
+            <ul className="flex flex-wrap gap-x-5 gap-y-1">
+              <li><Link href="/legal/marketplace_description" className="hover:text-foreground">Marketplace Service Description</Link></li>
+              <li><Link href="/legal/customer_terms" className="hover:text-foreground">Customer Terms</Link></li>
+              <li><Link href="/legal/technician_terms" className="hover:text-foreground">Technician Terms</Link></li>
+              <li><Link href="/legal/company_terms" className="hover:text-foreground">Service Company Terms</Link></li>
+              <li><Link href="/legal/privacy_policy" className="hover:text-foreground">Privacy</Link></li>
+              <li><Link href="/complaints" className="hover:text-foreground">Complaints</Link></li>
+              <li><Link href="/legal/grievance_policy" className="hover:text-foreground">Grievance Officer</Link></li>
             </ul>
           </div>
         </footer>

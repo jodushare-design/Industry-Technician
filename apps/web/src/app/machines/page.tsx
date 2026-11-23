@@ -119,7 +119,7 @@ async function Browse({ client }: { client: Awaited<ReturnType<typeof createServ
           <h2 className="mb-3 text-xl font-bold">Rice mill — by process stage</h2>
           <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {line.map(({ stage, machines }, i) => (
-              <li key={stage.id} className="rounded-lg border border-line bg-surface p-4">
+              <li key={stage.id} className="rounded-2xl bg-surface shadow-card p-4">
                 <h3 className="font-semibold">
                   <span className="mr-2 text-muted">{i + 1}.</span>
                   <Link className="hover:underline" href={`/machines/${stage.key}`}>{stage.name}</Link>
@@ -141,7 +141,7 @@ async function Browse({ client }: { client: Awaited<ReturnType<typeof createServ
           <h2 className="mb-3 text-xl font-bold">All industries — by equipment category</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {categories.filter((c) => c.machines.length > 0).map(({ category, machines }) => (
-              <details key={category.id} className="rounded-lg border border-line bg-surface p-4">
+              <details key={category.id} className="rounded-2xl bg-surface shadow-card p-4">
                 <summary className="cursor-pointer font-semibold">{category.name} <span className="text-sm font-normal text-muted">({machines.length})</span></summary>
                 <ul className="mt-2 space-y-1 text-sm">
                   {machines.map((m) => (

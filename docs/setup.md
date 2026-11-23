@@ -20,6 +20,32 @@ npm run check
 
 `npm run check` runs the guards, typechecks every workspace, and runs all tests. The database/RLS tests use PGlite (in-process Postgres), so no database or Docker is needed.
 
+### Local demo mode (no Supabase account needed)
+
+To click through the website and admin portal with fictional sample data:
+
+```powershell
+npm run demo
+```
+
+```powershell
+npm run demo:env
+```
+
+```powershell
+npm run dev:web
+```
+
+```powershell
+npm run dev:admin
+```
+
+- `npm run demo` starts a small local stand-in for Supabase on http://localhost:54321. It uses the real migrations, RLS policies and functions over PGlite, and stores its data in `.data-demo/` (gitignored). `npm run demo:reset` wipes the data and seeds it again.
+- `npm run demo:env` writes `apps/web/.env.local` and `apps/admin/.env.local` pointing at it. It refuses to overwrite a non-demo `.env.local`. Restart the dev servers after running it. `npm run demo:env -- --off` removes the demo settings again.
+- The sign-in pages then show **Demo accounts**: tap a person to sign in. The code for any phone number is `123456`. Accounts include a customer (Lakshmi Reddy), independent technicians, a service company admin and employee, a profile waiting for verification, support staff, and a platform admin (Arjun Das; use the admin portal on port 3001).
+- Not covered: realtime (the apps fall back to polling) and real SMS.
+- **Local only.** The demo signing secret is public, in `scripts/demo/jwt.mjs`. Never expose the demo server to a network, and never enter real people's data.
+
 ## 3. Create the Supabase dev project
 
 1. Create a project at supabase.com (region: **Mumbai, ap-south-1**). Name it e.g. `itm-dev`. Never use the production project for development.

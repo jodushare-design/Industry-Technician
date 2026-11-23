@@ -24,7 +24,7 @@ export default async function AuditPage() {
   return (
     <div>
       <PageHeader title="Audit log" description="Append-only. Latest 200 entries." />
-      <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+      <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
         <table className="w-full text-left text-sm">
           <thead className="bg-subtle">
             <tr>
