@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { PLATFORM_DISCLAIMER_SHORT } from "@itm/ui";
 import { NotificationBell } from "@/components/notification-bell";
+import { MainNav } from "@/components/main-nav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,12 +19,6 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
 };
-
-const NAV = [
-  ["/machines", "Machines"],
-  ["/requests", "My requests"],
-  ["/work", "Work"],
-] as const;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -44,11 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <span className="text-[17px] tracking-tight">Industrial Technician Marketplace</span>
             </Link>
             <div className="flex flex-wrap items-center gap-1 text-[15px]">
-              {NAV.map(([href, label]) => (
-                <Link key={href} href={href} className="rounded-full px-3 py-1.5 text-foreground/80 transition hover:bg-subtle hover:text-foreground">
-                  {label}
-                </Link>
-              ))}
+              <MainNav />
               <span className="px-2"><NotificationBell /></span>
               <Link href="/account" className="rounded-full bg-blue-soft px-3.5 py-1.5 font-semibold text-accent transition hover:brightness-95">
                 My account

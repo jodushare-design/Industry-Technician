@@ -7,7 +7,8 @@ import { getSession } from "@itm/next/server";
 import { Alert, Card, Flash, PageHeader, StatusPill, primaryButtonClass, smallButtonClass } from "@itm/ui";
 import { MediaUploader } from "@/components/media-uploader";
 import { Chat } from "@/components/chat";
-import { cancelAction, findProvidersAction, inviteAction, postAction, respondToOfferAction, selectAction, unpostAction, withdrawAction } from "../actions";
+import { CancelRequest } from "./cancel-request";
+import { findProvidersAction, inviteAction, postAction, respondToOfferAction, selectAction, unpostAction, withdrawAction } from "../actions";
 
 export const metadata: Metadata = { title: "Request" };
 export const dynamic = "force-dynamic";
@@ -331,15 +332,7 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
         </ul>
       </details>
 
-      {open && (
-        <form action={cancelAction} className="flex flex-wrap items-end gap-2 text-sm">
-          <input type="hidden" name="requestId" value={id} />
-          <label className="flex flex-col">Cancel this request — reason
-            <input name="reason" required minLength={3} className="min-h-10 rounded-md border border-line bg-surface px-2" />
-          </label>
-          <button className="text-danger underline">Cancel request</button>
-        </form>
-      )}
+      {open && <CancelRequest requestId={id} />}
 
       {!open && r.status === "cancelled" && <Alert tone="info">Cancelled: {r.cancel_reason}</Alert>}
     </div>
