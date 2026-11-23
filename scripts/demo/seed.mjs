@@ -194,6 +194,12 @@ export async function seedDemo({ db, asCaller, storageDir }) {
   await as(P, 'select public.assign_company_member($1, $2)', [inv3, member]);
   await as(C, `select public.open_complaint($1, 'delay', 'The visit was promised for Monday but nobody came and there was no message.')`, [r3]);
 
+  // ---- Request 4: paddy dryer, posted for providers; Alpha Mill Services offered to help
+  const r4 = (await one(C, `select public.create_service_request($1, 'breakdown', 'Paddy dryer burner not igniting; harvest paddy is waiting.', '{machine_stopped}', null, $2, null, null, null, 'within_3_days') as id`, [factory, await key('machine.paddy_dryer')])).id;
+  await as(C, 'select public.match_providers($1)', [r4]);
+  await as(C, 'select public.post_service_request($1)', [r4]);
+  await as(P, `select public.offer_to_help($1, $2, 'Our dryer team can come tomorrow morning with burner spares.')`, [r4, company]);
+
   // Ids for callers that build on the demo (the security tests use them).
-  return { users, factory, ravi, srinivas, anil, org, company, member, r1, r2, r3, conv1, est1, est2, part };
+  return { users, factory, ravi, srinivas, anil, org, company, member, r1, r2, r3, r4, conv1, est1, est2, part };
 }

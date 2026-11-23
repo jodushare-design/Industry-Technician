@@ -21,6 +21,10 @@ export default async function WorkInboxPage({ searchParams }: PageProps<"/work">
 
   return (
     <div className="space-y-6">
+      <nav className="flex gap-2 text-sm" aria-label="Work">
+        <span aria-current="page" className="rounded-full bg-accent px-4 py-1.5 font-semibold text-on-accent">Requests for you</span>
+        <Link href="/work/open" className="rounded-full bg-subtle px-4 py-1.5 font-semibold">Open requests</Link>
+      </nav>
       <PageHeader title="Requests for you" description="Customers choose whom to contact. Accept the ones you can take on; decline the rest." />
       <Flash notice={sp.notice} error={sp.error} />
       {!approved && (

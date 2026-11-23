@@ -35,6 +35,33 @@
 - Phone numbers are never shown here; contact sharing comes with chat (Prompt 7).
 - **Decline**, with an optional reason.
 
+## Quick reporting from saved machines
+
+Customers who saved their machines (Account → Factories and machines) do not re-enter machine details:
+
+- **Report a problem** on each saved machine, and the machine chips at the top of **My requests**, open `/requests/new?machine=<id>` with that machine chosen.
+- With a saved machine chosen, the form asks only what is happening (symptom chips and a line or two), urgency and the kind of help. The factory, machine type, make, model and industry come from the saved machine.
+- Saving runs matching straight away. The customer lands on the provider list.
+
+## Posting a request (when nobody suitable is listed)
+
+Matching lists only approved providers who state they work on the machine **and** travel to the factory. When that finds nobody, or the customer wants more choice, the customer can **post** the request (`post_service_request`).
+
+- **Who sees it.** Approved, available providers (independent technicians, and service companies through their company admin) who work on that kind of machine: the machine itself, its category or a linked service skill. For "I don't know the machine name" requests, any provider in the area sees it.
+  - The area is wider than matching: within twice their travel distance (at least 100 km), in their districts, or anywhere when the locations are not known.
+  - Providers approved later see it too.
+  - The rule is in `private.posted_request_visible_to`.
+- **What they see.** The machine, symptoms, description, urgency, preferred date, locality, district and distance. They do not see the customer's name, exact address, phone, photos or chat. See `list_open_requests` and the page `/work/open`.
+- **Offers.**
+  - A provider taps **Offer to help**, with an optional note.
+  - The customer is notified and decides. **Contact** invites the provider in the normal way (`respond_to_offer` → `invite_provider`), and the provider sees the site details only after accepting. **Decline** keeps the offer on record.
+  - Providers can withdraw a pending offer.
+  - Offers are rate-limited (Admin → Settings).
+- **Ending.** Posting stops when the customer stops it, chooses a provider, approves an estimate, or cancels (trigger `private.end_posting`).
+- The platform never assigns or dispatches a provider: the customer always chooses whom to contact.
+
+Tests: `supabase/tests/posting.test.ts`.
+
 ## Matching (`match_providers`, in SQL)
 
 Only the request's customer (or staff) can run it.

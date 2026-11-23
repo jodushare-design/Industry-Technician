@@ -66,10 +66,17 @@ export default async function FactoriesPage({ searchParams }: PageProps<"/accoun
                       .join(" · ")}
                   </span>
                 </span>
-                <form action={removeMachineAction}>
-                  <input type="hidden" name="id" value={m.id} />
-                  <button className="text-danger underline" aria-label={`Remove ${m.label ?? nameOf.get(m.machine_type_id)}`}>Remove</button>
-                </form>
+                <span className="flex items-center gap-3">
+                  {m.is_active && (
+                    <Link href={`/requests/new?machine=${m.id}`} className={smallButtonClass} aria-label={`Report a problem with ${m.label ?? nameOf.get(m.machine_type_id)}`}>
+                      Report a problem
+                    </Link>
+                  )}
+                  <form action={removeMachineAction}>
+                    <input type="hidden" name="id" value={m.id} />
+                    <button className="text-danger underline" aria-label={`Remove ${m.label ?? nameOf.get(m.machine_type_id)}`}>Remove</button>
+                  </form>
+                </span>
               </li>
             ))}
             {(machines ?? []).filter((m) => m.factory_id === f.id).length === 0 && (

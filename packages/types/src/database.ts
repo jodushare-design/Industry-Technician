@@ -460,7 +460,7 @@ export interface Database {
           industry_id: string | null; machine_type_id: string; manufacturer_id: string | null; model_id: string | null;
           manufacturer_text: string | null; model_text: string | null; service_type: ServiceType; symptoms: string[];
           description: string; urgency: RequestUrgency; preferred_date: string | null; status: JobStatus;
-          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null;
+          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null; posted_at: string | null;
           scheduled_for: string | null; schedule_note: string | null;
         }>;
         Insert: Partial<Row<{
@@ -468,14 +468,14 @@ export interface Database {
           industry_id: string | null; machine_type_id: string; manufacturer_id: string | null; model_id: string | null;
           manufacturer_text: string | null; model_text: string | null; service_type: ServiceType; symptoms: string[];
           description: string; urgency: RequestUrgency; preferred_date: string | null; status: JobStatus;
-          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null;
+          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null; posted_at: string | null;
         }>>;
         Update: Partial<Row<{
           id: string; reference: string; customer_id: string; factory_id: string; customer_machine_id: string | null;
           industry_id: string | null; machine_type_id: string; manufacturer_id: string | null; model_id: string | null;
           manufacturer_text: string | null; model_text: string | null; service_type: ServiceType; symptoms: string[];
           description: string; urgency: RequestUrgency; preferred_date: string | null; status: JobStatus;
-          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null;
+          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null; posted_at: string | null;
         }>>;
         Relationships: [];
       };
@@ -734,6 +734,12 @@ export interface Database {
         Update: Partial<Row<{ id: string; complaint_id: string; storage_path: string; mime_type: string; size_bytes: number; uploaded_by: string; created_at: string }>>;
         Relationships: [];
       };
+      request_offers: {
+        Row: Row<{ id: string; request_id: string; provider_profile_id: string; offered_by: string; message: string | null; status: 'pending' | 'invited' | 'declined' | 'withdrawn'; created_at: string; decided_at: string | null }>;
+        Insert: Partial<Row<{ id: string; request_id: string; provider_profile_id: string; offered_by: string; message: string | null; status: 'pending' | 'invited' | 'declined' | 'withdrawn'; created_at: string; decided_at: string | null }>>;
+        Update: Partial<Row<{ id: string; request_id: string; provider_profile_id: string; offered_by: string; message: string | null; status: 'pending' | 'invited' | 'declined' | 'withdrawn'; created_at: string; decided_at: string | null }>>;
+        Relationships: [];
+      };
       platform_settings: {
         Row: Row<{ key: string; value: Json; label: string; description: string; updated_at: string; updated_by: string | null }>;
         Insert: Partial<Row<{ key: string; value: Json; label: string; description: string; updated_at: string; updated_by: string | null }>>;
@@ -895,6 +901,12 @@ export interface Database {
       staff_read_conversation: { Args: { p_complaint: string; p_conversation: string }; Returns: Json };
       set_platform_setting: { Args: { p_key: string; p_value: Json }; Returns: undefined };
       admin_report: { Args: { p_from: string; p_to: string }; Returns: Json };
+      post_service_request: { Args: { p_request: string }; Returns: number };
+      unpost_service_request: { Args: { p_request: string }; Returns: undefined };
+      list_open_requests: { Args: Record<string, never>; Returns: Json };
+      offer_to_help: { Args: { p_request: string; p_provider: string; p_message?: string | null }; Returns: string };
+      withdraw_offer: { Args: { p_offer: string }; Returns: undefined };
+      respond_to_offer: { Args: { p_offer: string; p_accept: boolean }; Returns: undefined };
     };
     Enums: {
       app_role: AppRole;

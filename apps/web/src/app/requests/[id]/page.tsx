@@ -7,13 +7,14 @@ import { getSession } from "@itm/next/server";
 import { Alert, Card, Flash, PageHeader, StatusPill, primaryButtonClass, smallButtonClass } from "@itm/ui";
 import { MediaUploader } from "@/components/media-uploader";
 import { Chat } from "@/components/chat";
-import { cancelAction, findProvidersAction, inviteAction, selectAction, withdrawAction } from "../actions";
+import { cancelAction, findProvidersAction, inviteAction, postAction, respondToOfferAction, selectAction, unpostAction, withdrawAction } from "../actions";
 
 export const metadata: Metadata = { title: "Request" };
 export const dynamic = "force-dynamic";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const OPEN = ["submitted", "finding_providers", "provider_contacted", "discussion"];
+const OFFER_LABELS = { pending: "Waiting for you", invited: "Contacted", declined: "Declined", withdrawn: "Withdrawn by provider" } as const;
 
 export default async function RequestPage({ params, searchParams }: PageProps<"/requests/[id]">) {
   const { id } = await params;
@@ -36,13 +37,14 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
     client.from("factories").select("name, locality").eq("id", r.factory_id).maybeSingle(),
   ]);
   const { data: conversations } = await client.from("conversations").select("id, provider_profile_id").eq("request_id", id);
+  const { data: offers } = await client.from("request_offers").select("id, provider_profile_id, message, status, created_at").eq("request_id", id).order("created_at");
   const estimates = await listEstimates(client, id);
   const name = new Map((entities ?? []).map((e) => [e.id, e.name]));
 
   // latest matching run only
   const latestRun = matches?.[0]?.created_at;
   const latest = (matches ?? []).filter((m) => m.created_at === latestRun).sort((a, b) => a.rank - b.rank);
-  const providerIds = [...new Set([...latest.map((m) => m.provider_profile_id), ...(invitations ?? []).map((i) => i.provider_profile_id), ...estimates.map((e) => e.provider_profile_id)])];
+  const providerIds = [...new Set([...latest.map((m) => m.provider_profile_id), ...(invitations ?? []).map((i) => i.provider_profile_id), ...estimates.map((e) => e.provider_profile_id), ...(offers ?? []).map((o) => o.provider_profile_id)])];
   const publics = await Promise.all(providerIds.map(async (pid) => [pid, await getProviderPublic(client, pid).catch(() => null)] as const));
   const pub = new Map(publics);
   const invitationOf = new Map((invitations ?? []).map((i) => [i.provider_profile_id, i]));
@@ -242,6 +244,77 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
                   </div>
                   <p className="mt-1 text-sm font-medium">Why this match</p>
                   <ul className="list-disc pl-5 text-sm text-muted">{reasons.map((x) => <li key={x}>{x}</li>)}</ul>
+                </li>
+              );
+            })}
+          </ul>
+          {latest.length === 0 && r.status !== "submitted" && !r.posted_at && (
+            <p className="mb-3 text-sm text-muted">No provider is listed for this machine within travel distance of your factory yet.</p>
+          )}
+          {r.posted_at ? (
+            <div className="mt-4 rounded-2xl bg-green-soft p-4">
+              <p className="font-semibold text-success">Posted for providers</p>
+              <p className="mt-1 text-sm">
+                Since {new Date(r.posted_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}, approved
+                providers who work on this kind of machine — including some farther away — can see the machine, the problem and your area (not your
+                name or address) and offer to help. You decide whom to contact.
+              </p>
+              <form action={unpostAction} className="mt-2">
+                <input type="hidden" name="requestId" value={id} />
+                <button className="text-sm font-semibold text-accent underline">Stop posting</button>
+              </form>
+            </div>
+          ) : (
+            <div className={`mt-4 rounded-2xl p-4 ${latest.length === 0 && r.status !== "submitted" ? "bg-orange-soft" : "bg-subtle"}`}>
+              <p className="font-semibold">{latest.length === 0 && r.status !== "submitted" ? "Nobody suitable yet? Post this request" : "Want more choice? Post this request"}</p>
+              <p className="mt-1 text-sm">
+                Providers who work on this kind of machine, including some farther away, will see the machine, the problem and your area — not your
+                name or address — and can offer to help. Nothing is shared further until you choose to contact someone.
+              </p>
+              <form action={postAction} className="mt-3">
+                <input type="hidden" name="requestId" value={id} />
+                <button className={primaryButtonClass}>Post request to providers</button>
+              </form>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {(offers ?? []).length > 0 && (
+        <Card>
+          <h2 id="offers" className="mb-1 font-semibold">Offers to help</h2>
+          <p className="mb-3 text-sm text-muted">Providers who saw your posted request. Contact the ones you want to talk to; they see your site details only after they accept.</p>
+          <ul className="space-y-3">
+            {(offers ?? []).map((o) => {
+              const p = pub.get(o.provider_profile_id);
+              return (
+                <li key={o.id} className="rounded-2xl bg-subtle p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <Link href={`/providers/${o.provider_profile_id}`} className="font-semibold underline">{p?.display_name ?? "Provider"}</Link>
+                      <span className="ml-2 text-sm text-muted">{p?.kind === "company" ? "Service company" : "Independent service provider"}{p?.base_locality ? ` · ${p.base_locality}` : ""}</span>
+                    </div>
+                    {o.status === "pending" ? (
+                      <span className="flex gap-2">
+                        <form action={respondToOfferAction}>
+                          <input type="hidden" name="requestId" value={id} />
+                          <input type="hidden" name="offerId" value={o.id} />
+                          <input type="hidden" name="accept" value="1" />
+                          <button className={primaryButtonClass}>Contact</button>
+                        </form>
+                        <form action={respondToOfferAction}>
+                          <input type="hidden" name="requestId" value={id} />
+                          <input type="hidden" name="offerId" value={o.id} />
+                          <input type="hidden" name="accept" value="0" />
+                          <button className={smallButtonClass}>Decline</button>
+                        </form>
+                      </span>
+                    ) : (
+                      <StatusPill tone={o.status === "invited" ? "success" : "neutral"}>{OFFER_LABELS[o.status]}</StatusPill>
+                    )}
+                  </div>
+                  {o.message && <p className="mt-2 text-sm">“{o.message}”</p>}
+                  <p className="mt-1 text-xs text-muted">{new Date(o.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}</p>
                 </li>
               );
             })}

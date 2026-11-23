@@ -6,6 +6,9 @@ import {
   createServiceRequest,
   inviteProvider,
   matchProviders,
+  postServiceRequest,
+  respondToOffer,
+  unpostServiceRequest,
   selectProvider,
   withdrawInvitation,
 } from "@itm/api";
@@ -37,7 +40,20 @@ export async function createRequestAction(_prev: NewRequestState, form: FormData
     reportError(err, { where: "web.requests.create" });
     return { error: err.userMessage, fieldErrors: err.fieldErrors };
   }
-  redirect(withMessage(`/requests/${id}`, "notice", "Request created. Add photos or a voice note, then find providers."));
+  // Save the customer a step: look for providers straight away.
+  let found = -1;
+  try {
+    found = (await matchProviders(session.client, id)).length;
+  } catch (e) {
+    reportError(toAppError(e), { where: "web.requests.create.match" });
+  }
+  const notice =
+    found > 0
+      ? `Request saved. ${found} provider${found === 1 ? "" : "s"} may suit this job — choose whom to contact below.`
+      : found === 0
+        ? "Request saved. No provider is listed for this machine near you yet — post the request below so more providers can offer to help."
+        : "Request saved. Choose Find providers below.";
+  redirect(withMessage(`/requests/${id}`, "notice", notice) + "#providers");
 }
 
 const back = (form: FormData) => `/requests/${String(form.get("requestId"))}`;
@@ -45,7 +61,9 @@ const back = (form: FormData) => `/requests/${String(form.get("requestId"))}`;
 export async function findProvidersAction(form: FormData) {
   await runAction(`${back(form)}#providers`, "web.requests.match", async ({ client }) => {
     const m = await matchProviders(client, String(form.get("requestId")));
-    return m.length ? `Found ${m.length} provider${m.length === 1 ? "" : "s"} that may suit this job.` : "No matching providers yet. Try again later or contact support.";
+    return m.length
+      ? `Found ${m.length} provider${m.length === 1 ? "" : "s"} that may suit this job.`
+      : "No provider is listed for this machine near you yet. Post the request so more providers can offer to help.";
   });
 }
 
@@ -74,5 +92,29 @@ export async function cancelAction(form: FormData) {
   await runAction(back(form), "web.requests.cancel", async ({ client }) => {
     await cancelServiceRequest(client, String(form.get("requestId")), String(form.get("reason") ?? ""));
     return "Request cancelled. The providers you contacted have been told.";
+  });
+}
+
+export async function postAction(form: FormData) {
+  await runAction(`${back(form)}#providers`, "web.requests.post", async ({ client }) => {
+    const n = await postServiceRequest(client, String(form.get("requestId")));
+    return n > 0
+      ? `Posted. ${n} provider${n === 1 ? " who works" : "s who work"} on this kind of machine can now see it and offer to help.`
+      : "Posted. Providers who work on this kind of machine will see it as they join or update their profiles. We will notify you when someone offers to help.";
+  });
+}
+
+export async function unpostAction(form: FormData) {
+  await runAction(`${back(form)}#providers`, "web.requests.unpost", async ({ client }) => {
+    await unpostServiceRequest(client, String(form.get("requestId")));
+    return "Posting stopped. Providers can no longer offer to help with this request.";
+  });
+}
+
+export async function respondToOfferAction(form: FormData) {
+  const accept = form.get("accept") === "1";
+  await runAction(`${back(form)}#offers`, "web.requests.offer", async ({ client }) => {
+    await respondToOffer(client, String(form.get("offerId")), accept);
+    return accept ? "Provider contacted. You'll see here when they accept, and you can then chat." : "Offer declined.";
   });
 }

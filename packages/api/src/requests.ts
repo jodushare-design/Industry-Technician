@@ -156,3 +156,53 @@ export interface InvitationSummary {
 export async function listMyInvitations(client: ItmClient, includeClosed = false): Promise<InvitationSummary[]> {
   return (unwrap(await client.rpc('list_my_invitations', { p_include_closed: includeClosed })) as unknown as InvitationSummary[]) ?? [];
 }
+
+// ---------------------------------------------------------------------------
+// Posting a request for providers to offer help (when matching finds nobody)
+// ---------------------------------------------------------------------------
+
+export type OfferStatus = 'pending' | 'invited' | 'declined' | 'withdrawn';
+export interface OpenRequest {
+  request_id: string;
+  reference: string;
+  service_type: string;
+  symptoms: string[];
+  description: string;
+  urgency: string;
+  preferred_date: string | null;
+  posted_at: string;
+  machine_type: string;
+  locality: string | null;
+  district: string | null;
+  distance_km: number | null;
+  provider_id: string;
+  provider_name: string | null;
+  my_offer: OfferStatus | null;
+  my_offer_id: string | null;
+}
+
+/** Customer posts the request. Returns how many providers can see it now. */
+export async function postServiceRequest(client: ItmClient, requestId: string): Promise<number> {
+  return value(await client.rpc('post_service_request', { p_request: requestId }));
+}
+
+export async function unpostServiceRequest(client: ItmClient, requestId: string): Promise<void> {
+  unwrap(await client.rpc('unpost_service_request', { p_request: requestId }));
+}
+
+/** Posted requests that the provider profiles managed by the caller may offer to help with. */
+export async function listOpenRequests(client: ItmClient): Promise<OpenRequest[]> {
+  return value(await client.rpc('list_open_requests', {})) as unknown as OpenRequest[];
+}
+
+export async function offerToHelp(client: ItmClient, requestId: string, providerId: string, message?: string): Promise<string> {
+  return value(await client.rpc('offer_to_help', { p_request: requestId, p_provider: providerId, p_message: message?.trim() || null }));
+}
+
+export async function withdrawOffer(client: ItmClient, offerId: string): Promise<void> {
+  unwrap(await client.rpc('withdraw_offer', { p_offer: offerId }));
+}
+
+export async function respondToOffer(client: ItmClient, offerId: string, accept: boolean): Promise<void> {
+  unwrap(await client.rpc('respond_to_offer', { p_offer: offerId, p_accept: accept }));
+}
