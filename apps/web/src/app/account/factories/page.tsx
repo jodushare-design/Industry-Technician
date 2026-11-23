@@ -6,7 +6,7 @@ import { getSession } from "@itm/next/server";
 import { Card, Flash, PageHeader, SelectField, TextField, fieldClass, primaryButtonClass, smallButtonClass } from "@itm/ui";
 import { LocationFields } from "@/components/location-fields";
 import { getCatalogueOptions, type CatalogueOptions } from "@/lib/options";
-import { removeMachineAction, saveFactoryAction, saveMachineAction, setFactoryActiveAction } from "./actions";
+import { removeMachineAction, saveFactoryAction, saveMachineAction, setFactoryActiveAction, setFactoryLocationAction } from "./actions";
 
 export const metadata: Metadata = { title: "My factories and machines" };
 export const dynamic = "force-dynamic";
@@ -44,7 +44,6 @@ export default async function FactoriesPage({ searchParams }: PageProps<"/accoun
               <h2 className="text-lg font-semibold">{f.name}</h2>
               <p className="text-sm text-muted">
                 {[f.address_line, f.locality, f.district, f.pincode].filter(Boolean).join(", ")}
-                {f.latitude != null && " · location saved"}
               </p>
             </div>
             <form action={setFactoryActiveAction}>
@@ -53,6 +52,17 @@ export default async function FactoriesPage({ searchParams }: PageProps<"/accoun
               <button className={smallButtonClass}>Hide this factory</button>
             </form>
           </div>
+
+          <form action={setFactoryLocationAction} className={`rounded-2xl p-3 ${f.latitude != null ? "bg-subtle" : "bg-orange-soft"}`}>
+            <input type="hidden" name="id" value={f.id} />
+            <p className="mb-2 text-sm font-semibold">
+              {f.latitude != null ? "Factory location" : "Add the factory’s live location — technicians are then matched by real distance"}
+            </p>
+            <div className="flex flex-wrap items-start gap-3">
+              <LocationFields latName="latitude" lngName="longitude" defaultLat={f.latitude} defaultLng={f.longitude} hint="" />
+              <button className={smallButtonClass}>Save location</button>
+            </div>
+          </form>
 
           <ul className="divide-y divide-line rounded-md border border-line">
             {(machines ?? []).filter((m) => m.factory_id === f.id).map((m) => (

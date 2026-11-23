@@ -7,6 +7,7 @@ import {
   inviteProvider,
   matchProviders,
   postServiceRequest,
+  setFactoryLocation,
   respondToOffer,
   unpostServiceRequest,
   selectProvider,
@@ -27,6 +28,11 @@ export async function createRequestAction(_prev: NewRequestState, form: FormData
   let id: string;
   try {
     const input = formObject(form, ["symptoms"]);
+    // Live location captured on the form is saved to the factory first, so matching uses it.
+    const lat = String(form.get("factoryLatitude") ?? "");
+    if (lat) {
+      await setFactoryLocation(session.client, String(form.get("factoryId")), { latitude: lat, longitude: String(form.get("factoryLongitude") ?? "") });
+    }
     // "mine:<id>" = one of my machines; "type:<id>" = a catalogue machine type
     const machine = String(input.machine ?? "");
     id = await createServiceRequest(session.client, {
@@ -46,6 +52,19 @@ export async function createRequestAction(_prev: NewRequestState, form: FormData
     found = (await matchProviders(session.client, id)).length;
   } catch (e) {
     reportError(toAppError(e), { where: "web.requests.create.match" });
+  }
+  if (form.get("intent") === "post") {
+    let reach = -1;
+    try {
+      reach = await postServiceRequest(session.client, id);
+    } catch (e) {
+      reportError(toAppError(e), { where: "web.requests.create.post" });
+    }
+    const posted =
+      reach < 0
+        ? "Request saved, but posting did not work. Use Post request to providers below."
+        : `Your issue is posted. ${reach > 0 ? `${reach} technician${reach === 1 ? " or company has" : "s and companies have"} been told` : "Technicians who work on this machine will see it as they join"}; you'll get a notification when someone offers to help.${found > 0 ? ` ${found} provider${found === 1 ? " is" : "s are"} also listed below — you can contact them now.` : ""}`;
+    redirect(withMessage(`/requests/${id}`, "notice", posted) + "#providers");
   }
   const notice =
     found > 0

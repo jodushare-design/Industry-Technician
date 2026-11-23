@@ -47,6 +47,9 @@ export default function HomePage() {
             <Link href="/sign-in?as=customer" className="inline-flex min-h-12 items-center rounded-full bg-accent px-6 text-[17px] font-semibold text-on-accent shadow-sm transition hover:bg-accent-strong active:scale-[0.98]">
               Find a technician
             </Link>
+            <Link href="/requests/new?post=1" className="inline-flex min-h-12 items-center rounded-full bg-gradient-to-r from-ios-orange to-ios-pink px-6 text-[17px] font-semibold text-white shadow-sm transition hover:brightness-105 active:scale-[0.98]">
+              Post your machine problem
+            </Link>
             <Link href="/sign-in?as=provider" className="inline-flex min-h-12 items-center rounded-full bg-blue-soft px-6 text-[17px] font-semibold text-accent transition hover:brightness-95 active:scale-[0.98]">
               Join as a service provider
             </Link>

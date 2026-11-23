@@ -2,17 +2,20 @@
 
 import { useActionState, useState } from "react";
 import { SERVICE_TYPE_LABELS, SYMPTOM_LABELS, URGENCY_LABELS } from "@itm/core";
-import { Alert, Button, TextField, fieldClass } from "@itm/ui";
+import { Alert, TextField, fieldClass, primaryButtonClass } from "@itm/ui";
+import { LocationFields } from "@/components/location-fields";
 import { createRequestAction, type NewRequestState } from "../actions";
 
 interface Props {
-  factories: { id: string; name: string; locality: string }[];
+  factories: { id: string; name: string; locality: string; hasLocation: boolean }[];
   myMachines: { id: string; factoryId: string; label: string; detail: string }[];
   industries: { id: string; name: string }[];
   unknownMachine?: { id: string; name: string };
   machineGroups: { label: string; options: { id: string; name: string }[] }[];
   /** Saved machine chosen before opening the form ("Report a problem" on a machine). */
   initialMachineId?: string;
+  /** Opened from "Post your issue": posting is the main button. */
+  postFirst?: boolean;
 }
 
 const legend = "mb-2 text-[17px] font-semibold";
@@ -23,7 +26,7 @@ const chip = "flex cursor-pointer items-center gap-2 rounded-full bg-surface px-
  * (factory, machine type, make, model, industry) is not asked again. The customer
  * only says what is happening and how urgent it is.
  */
-export function NewRequestForm({ factories, myMachines, industries, unknownMachine, machineGroups, initialMachineId }: Props) {
+export function NewRequestForm({ factories, myMachines, industries, unknownMachine, machineGroups, initialMachineId, postFirst = false }: Props) {
   const [state, action, pending] = useActionState<NewRequestState, FormData>(createRequestAction, {});
   const initial = myMachines.find((m) => m.id === initialMachineId);
   const [factoryId, setFactoryId] = useState(initial?.factoryId ?? factories[0]!.id);
@@ -32,6 +35,7 @@ export function NewRequestForm({ factories, myMachines, industries, unknownMachi
     initial ? `mine:${initial.id}` : machinesHere[0] ? `mine:${machinesHere[0].id}` : unknownMachine ? `type:${unknownMachine.id}` : "",
   );
   const savedChosen = machine.startsWith("mine:");
+  const factory = factories.find((f) => f.id === factoryId)!;
   const fe = state.fieldErrors ?? {};
 
   function changeFactory(id: string) {
@@ -115,6 +119,13 @@ export function NewRequestForm({ factories, myMachines, industries, unknownMachi
         )}
       </fieldset>
 
+      {!factory.hasLocation && (
+        <div key={factory.id} className="rounded-2xl bg-orange-soft p-4">
+          <p className="mb-2 text-sm font-semibold">Are you at {factory.name} now? Add its live location so technicians nearby are found.</p>
+          <LocationFields latName="factoryLatitude" lngName="factoryLongitude" hint="Optional. Saved to this factory; other users never see it." />
+        </div>
+      )}
+
       <fieldset>
         <legend className={legend}>2. What is happening?</legend>
         <div className="mb-3 flex flex-wrap gap-2">
@@ -156,11 +167,26 @@ export function NewRequestForm({ factories, myMachines, industries, unknownMachi
       </fieldset>
 
       {state.error && <Alert tone="error">{state.fieldErrors ? Object.values(state.fieldErrors).flat().join(" ") : state.error}</Alert>}
-      <p className="text-sm text-muted">
-        We then list independent providers who work on this machine near you, and you choose whom to contact. If nobody is listed, you can post the
-        request so more providers can offer to help. You agree the work, price and site arrangements directly with them.
-      </p>
-      <Button type="submit" disabled={pending || !machine}>{pending ? "Saving…" : "Find technicians"}</Button>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className={`rounded-2xl p-4 ${postFirst ? "bg-subtle" : "bg-blue-soft"}`}>
+          <button type="submit" name="intent" value="find" disabled={pending || !machine}
+            className={postFirst ? "inline-flex min-h-11 w-full items-center justify-center rounded-full bg-surface px-5 text-[15px] font-semibold text-accent shadow-sm" : `${primaryButtonClass} w-full`}>
+            {pending ? "Saving…" : "Find technicians"}
+          </button>
+          <p className="mt-2 text-sm text-muted">See technicians who work on this machine near you and choose whom to contact.</p>
+        </div>
+        <div className={`rounded-2xl p-4 ${postFirst ? "bg-blue-soft" : "bg-subtle"}`}>
+          <button type="submit" name="intent" value="post" disabled={pending || !machine}
+            className={postFirst ? `${primaryButtonClass} w-full` : "inline-flex min-h-11 w-full items-center justify-center rounded-full bg-surface px-5 text-[15px] font-semibold text-accent shadow-sm"}>
+            {pending ? "Saving…" : "Post my issue to all technicians"}
+          </button>
+          <p className="mt-2 text-sm text-muted">
+            Can&apos;t find anyone? Technicians and companies who work on this machine — including farther away — are told and can offer to help.
+            They see the problem and your area, not your name or address.
+          </p>
+        </div>
+      </div>
+      <p className="text-xs text-muted">You choose whom to contact. You agree the work, price and site arrangements directly with the provider.</p>
     </form>
   );
 }

@@ -17,9 +17,11 @@ import {
   providerDetailsSchema,
   providerSkillSchema,
   serviceAreaSchema,
+  siteLocationSchema,
   toAppError,
   type CustomerMachineInput,
   type FactoryInput,
+  type SiteLocationInput,
 } from '@itm/core';
 import type { ProviderPublic, ProviderStatus, SkillLevel, VerificationKind } from '@itm/types';
 import type { ItmClient } from './client';
@@ -60,6 +62,12 @@ export async function saveFactory(client: ItmClient, input: FactoryInput, id?: s
     ? await client.from('factories').update(row).eq('id', id).select('id')
     : await client.from('factories').insert(row).select('id');
   return one(unwrap(res)).id;
+}
+
+/** Set (or clear) only the factory's live location. Locations outside India are refused (also checked in SQL). */
+export async function setFactoryLocation(client: ItmClient, id: string, input: SiteLocationInput): Promise<void> {
+  const v = parseOrThrow(siteLocationSchema, input);
+  one(unwrap(await client.from('factories').update({ latitude: v.latitude ?? null, longitude: v.longitude ?? null }).eq('id', id).select('id')));
 }
 
 export async function setFactoryActive(client: ItmClient, id: string, active: boolean): Promise<void> {

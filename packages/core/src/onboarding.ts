@@ -213,3 +213,12 @@ export function distanceKm(a: { lat: number; lng: number }, b: { lat: number; ln
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
+
+/** A live-location fix for a site in India, or both empty to remove it. */
+export const siteLocationSchema = z
+  .object({ latitude: optional(latitude), longitude: optional(longitude) })
+  .refine((f) => (f.latitude === undefined) === (f.longitude === undefined), {
+    message: 'Location needs both latitude and longitude',
+    path: ['latitude'],
+  });
+export type SiteLocationInput = z.input<typeof siteLocationSchema>;

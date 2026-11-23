@@ -32,6 +32,13 @@ export default async function RequestsPage({ searchParams }: PageProps<"/request
         <Link href="/requests/new" className={`${primaryButtonClass} inline-flex items-center`}>Report a problem</Link>
       </div>
       <Flash notice={sp.notice} error={sp.error} />
+      <Link href="/requests/new?post=1" className="flex items-center gap-4 rounded-2xl bg-gradient-to-r from-ios-orange to-ios-pink p-4 text-white shadow-card transition hover:-translate-y-0.5 hover:shadow-raised">
+        <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/20 text-2xl font-bold">+</span>
+        <span>
+          <span className="block text-[17px] font-semibold">Can&apos;t find a technician? Post your issue</span>
+          <span className="block text-sm text-white/90">Technicians and companies who work on your machine are told and can offer to help. You choose whom to contact.</span>
+        </span>
+      </Link>
       {(myMachines ?? []).length > 0 && (
         <section aria-labelledby="quick" className="rounded-2xl bg-surface p-4 shadow-card">
           <h2 id="quick" className="font-semibold">Report a problem with</h2>

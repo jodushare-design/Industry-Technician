@@ -1,6 +1,6 @@
 "use server";
 
-import { removeCustomerMachine, saveCustomerMachine, saveFactory, setFactoryActive } from "@itm/api";
+import { removeCustomerMachine, saveCustomerMachine, saveFactory, setFactoryActive, setFactoryLocation } from "@itm/api";
 import { formObject, runAction } from "@/lib/action";
 
 const BACK = "/account/factories";
@@ -32,5 +32,13 @@ export async function removeMachineAction(form: FormData) {
   await runAction(BACK, "web.machines.remove", async ({ client }) => {
     await removeCustomerMachine(client, String(form.get("id")));
     return "Machine removed.";
+  });
+}
+
+export async function setFactoryLocationAction(form: FormData) {
+  await runAction(BACK, "web.factories.location", async ({ client }) => {
+    const latitude = String(form.get("latitude") ?? "");
+    await setFactoryLocation(client, String(form.get("id")), { latitude, longitude: String(form.get("longitude") ?? "") });
+    return latitude ? "Factory location saved. Technicians are now matched by real distance." : "Factory location removed.";
   });
 }
