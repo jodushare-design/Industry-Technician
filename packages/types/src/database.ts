@@ -62,6 +62,10 @@ export type MessageKind = 'text' | 'photo' | 'video' | 'voice' | 'estimate_card'
 export type EstimateKind = 'inspection' | 'repair' | 'additional_work';
 export type EstimateRevisionStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'revision_requested' | 'superseded' | 'withdrawn' | 'expired';
 
+export type PartCompatibility = 'unknown' | 'confirmed_by_provider' | 'confirmed_by_supplier' | 'not_compatible';
+export type PartAvailability = 'unknown' | 'in_stock' | 'to_order' | 'unavailable';
+export type PartStage = 'identified' | 'awaiting_approval' | 'approved' | 'rejected' | 'arranged' | 'received' | 'installed' | 'cancelled';
+
 type Row<T> = T;
 type NoInsert = never;
 
@@ -614,6 +618,45 @@ export interface Database {
         }>>;
         Relationships: [];
       };
+      part_requests: {
+        Row: Row<{
+          id: string; request_id: string; provider_profile_id: string; created_by: string; created_side: 'customer' | 'provider';
+          part_name: string; part_number: string | null; manufacturer_text: string | null; catalogue_part_id: string | null;
+          customer_machine_id: string | null; model_text: string | null; quantity: string; unit: string; specifications: string | null;
+          compatibility: PartCompatibility; compatibility_note: string | null; compatibility_set_by: string | null; compatibility_set_at: string | null;
+          supplier_name: string | null; supplier_contact: string | null; availability: PartAvailability; unit_price: string | null;
+          total_price: string | null; expected_delivery: string | null; arranged_by: 'customer' | 'provider' | null; photo_path: string | null;
+          stage: PartStage; approval_hash: string | null; decided_at: string | null; decided_by: string | null; decision_note: string | null;
+          created_at: string; updated_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; request_id: string; provider_profile_id: string; created_by: string; created_side: 'customer' | 'provider';
+          part_name: string; part_number: string | null; manufacturer_text: string | null; catalogue_part_id: string | null;
+          customer_machine_id: string | null; model_text: string | null; quantity: string; unit: string; specifications: string | null;
+          compatibility: PartCompatibility; compatibility_note: string | null; compatibility_set_by: string | null; compatibility_set_at: string | null;
+          supplier_name: string | null; supplier_contact: string | null; availability: PartAvailability; unit_price: string | null;
+          total_price: string | null; expected_delivery: string | null; arranged_by: 'customer' | 'provider' | null; photo_path: string | null;
+          stage: PartStage; approval_hash: string | null; decided_at: string | null; decided_by: string | null; decision_note: string | null;
+          created_at: string; updated_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; request_id: string; provider_profile_id: string; created_by: string; created_side: 'customer' | 'provider';
+          part_name: string; part_number: string | null; manufacturer_text: string | null; catalogue_part_id: string | null;
+          customer_machine_id: string | null; model_text: string | null; quantity: string; unit: string; specifications: string | null;
+          compatibility: PartCompatibility; compatibility_note: string | null; compatibility_set_by: string | null; compatibility_set_at: string | null;
+          supplier_name: string | null; supplier_contact: string | null; availability: PartAvailability; unit_price: string | null;
+          total_price: string | null; expected_delivery: string | null; arranged_by: 'customer' | 'provider' | null; photo_path: string | null;
+          stage: PartStage; approval_hash: string | null; decided_at: string | null; decided_by: string | null; decision_note: string | null;
+          created_at: string; updated_at: string;
+        }>>;
+        Relationships: [];
+      };
+      part_status_events: {
+        Row: Row<{ id: number; part_id: string; from_stage: PartStage | null; to_stage: PartStage; actor_id: string | null; note: string | null; created_at: string }>;
+        Insert: Partial<Row<{ id: number; part_id: string; from_stage: PartStage | null; to_stage: PartStage; actor_id: string | null; note: string | null; created_at: string }>>;
+        Update: Partial<Row<{ id: number; part_id: string; from_stage: PartStage | null; to_stage: PartStage; actor_id: string | null; note: string | null; created_at: string }>>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -744,6 +787,13 @@ export interface Database {
       send_estimate_revision: { Args: { p_revision: string }; Returns: string };
       withdraw_estimate_revision: { Args: { p_revision: string; p_reason: string }; Returns: undefined };
       decide_estimate: { Args: { p_revision: string; p_decision: string; p_hash: string; p_note?: string | null }; Returns: undefined };
+      create_part_request: { Args: { p_request: string; p_provider: string; p_fields: Json }; Returns: string };
+      update_part_request: { Args: { p_part: string; p_fields: Json }; Returns: undefined };
+      set_part_compatibility: { Args: { p_part: string; p_status: PartCompatibility; p_note: string }; Returns: undefined };
+      submit_part_for_approval: { Args: { p_part: string }; Returns: string };
+      decide_part: { Args: { p_part: string; p_approve: boolean; p_hash: string; p_arranged_by?: string | null; p_note?: string | null }; Returns: undefined };
+      advance_part: { Args: { p_part: string; p_stage: PartStage; p_note?: string | null }; Returns: undefined };
+      register_part_photo: { Args: { p_part: string; p_storage_path: string }; Returns: undefined };
     };
     Enums: {
       app_role: AppRole;
@@ -769,6 +819,9 @@ export interface Database {
       message_kind: MessageKind;
       estimate_kind: EstimateKind;
       estimate_revision_status: EstimateRevisionStatus;
+      part_compatibility: PartCompatibility;
+      part_availability: PartAvailability;
+      part_stage: PartStage;
     };
     CompositeTypes: Record<string, never>;
   };

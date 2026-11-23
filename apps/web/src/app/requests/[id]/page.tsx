@@ -119,6 +119,14 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
         </Card>
       )}
 
+      {estimates.some((e) => e.revisions.some((v) => v.status === "accepted")) && (
+        <Card>
+          <h2 className="mb-1 font-semibold">Spare parts</h2>
+          <p className="mb-2 text-sm text-muted">Parts are approved separately from the estimate.</p>
+          <Link className="underline" href={"/requests/" + id + "/parts"}>Open spare parts</Link>
+        </Card>
+      )}
+
       {(invitations ?? []).length > 0 && (
         <Card>
           <h2 className="mb-3 font-semibold">Providers you contacted</h2>

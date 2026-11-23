@@ -231,3 +231,10 @@ describe('company estimates and expiry', () => {
     await expect(decide(customer, d, 'accept', (await rev(d)).content_hash!)).rejects.toThrow(/ITM:estimate_expired/);
   });
 });
+
+describe('null inputs', () => {
+  it('a missing decision is refused, not treated as a change request', async () => {
+    const anyRev = (await db.query<{ id: string }>(`select id from public.estimate_revisions limit 1`)).rows[0]!.id;
+    await expect(as(db, customer, (q) => q('select public.decide_estimate($1, null, null)', [anyRev]))).rejects.toThrow(/ITM:invalid_decision/);
+  });
+});

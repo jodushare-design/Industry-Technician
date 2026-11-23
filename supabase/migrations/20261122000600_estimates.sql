@@ -381,7 +381,7 @@ begin
   if v.id is null or r.customer_id is distinct from auth.uid() then
     raise exception using errcode = '42501', message = 'only the customer who made the request can decide on an estimate';
   end if;
-  if p_decision not in ('accept', 'reject', 'request_revision') then
+  if coalesce(p_decision, '') not in ('accept', 'reject', 'request_revision') then
     raise exception 'ITM:invalid_decision: Choose accept, reject or request a revision';
   end if;
   if v.status <> 'sent' then

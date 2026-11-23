@@ -145,6 +145,13 @@ export default async function ProviderRequestPage({ params, searchParams }: Page
         </Card>
       )}
 
+      {myInvitations.some((i) => i.status === "accepted") && (
+        <Card>
+          <h2 className="mb-1 font-semibold">Spare parts</h2>
+          <Link href={"/work/" + id + "/parts"} className={smallButtonClass + " inline-flex items-center"}>Open spare parts</Link>
+        </Card>
+      )}
+
       {activeConv && (
         <Card>
           <h2 id="chat" className="mb-2 font-semibold">Messages with {r.customer_name}</h2>
