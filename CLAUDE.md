@@ -11,6 +11,7 @@ This is a **marketplace provider**, not a repair company. Read `docs/business-mo
 - Every new table: RLS enabled, explicit grants, policies, and PGlite tests in `supabase/tests` (including cross-tenant denial).
 - Business-meaningful writes go through `SECURITY DEFINER` functions with `set search_path = ''`, call `private.require_active_user()`, and write `private.audit(...)`.
 - Business-rule errors: `raise exception 'ITM:<rule_code>: <user message>'`.
+- Boolean access helpers must never return NULL: use `exists (...)` or `coalesce(..., false)`. `x in (list-with-null)` and `false or null` are NULL, and `if not <NULL>` does not raise — this caused two access bugs (chat participants, estimate drafting).
 - Money: `numeric(12,2)` INR in SQL, `bigint` paise in TS (`@itm/core` money helpers). Never floats.
 - Never delete complaints, approvals, estimates or audit records when an account is suspended or closed.
 - Legal text stays marked **DRAFT — LEGAL REVIEW REQUIRED** until `docs/legal-review/README.md` says Approved.

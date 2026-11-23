@@ -59,6 +59,9 @@ export type InvitationStatus = 'invited' | 'accepted' | 'declined' | 'withdrawn'
 
 export type MessageKind = 'text' | 'photo' | 'video' | 'voice' | 'estimate_card' | 'parts_card' | 'system';
 
+export type EstimateKind = 'inspection' | 'repair' | 'additional_work';
+export type EstimateRevisionStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'revision_requested' | 'superseded' | 'withdrawn' | 'expired';
+
 type Row<T> = T;
 type NoInsert = never;
 
@@ -578,6 +581,39 @@ export interface Database {
         }>>;
         Relationships: [];
       };
+      estimates: {
+        Row: Row<{ id: string; request_id: string; provider_profile_id: string; kind: EstimateKind; title: string; created_by: string; created_at: string }>;
+        Insert: Partial<Row<{ id: string; request_id: string; provider_profile_id: string; kind: EstimateKind; title: string; created_by: string; created_at: string }>>;
+        Update: Partial<Row<{ id: string; request_id: string; provider_profile_id: string; kind: EstimateKind; title: string; created_by: string; created_at: string }>>;
+        Relationships: [];
+      };
+      estimate_revisions: {
+        Row: Row<{
+          id: string; estimate_id: string; revision_no: number; status: EstimateRevisionStatus;
+          inspection_fee: string; visit_charge: string; labour: string; travel: string; parts: string; other_charges: string;
+          other_charges_note: string | null; tax_amount: string; tax_note: string | null; total: string;
+          scope: string; exclusions: string | null; expected_completion: string | null; valid_until: string | null; notes: string | null;
+          prepared_by: string; sent_at: string | null; content_hash: string | null; decided_at: string | null; decided_by: string | null;
+          decision_note: string | null; created_at: string; updated_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; estimate_id: string; revision_no: number; status: EstimateRevisionStatus;
+          inspection_fee: string; visit_charge: string; labour: string; travel: string; parts: string; other_charges: string;
+          other_charges_note: string | null; tax_amount: string; tax_note: string | null; total: string;
+          scope: string; exclusions: string | null; expected_completion: string | null; valid_until: string | null; notes: string | null;
+          prepared_by: string; sent_at: string | null; content_hash: string | null; decided_at: string | null; decided_by: string | null;
+          decision_note: string | null; created_at: string; updated_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; estimate_id: string; revision_no: number; status: EstimateRevisionStatus;
+          inspection_fee: string; visit_charge: string; labour: string; travel: string; parts: string; other_charges: string;
+          other_charges_note: string | null; tax_amount: string; tax_note: string | null; total: string;
+          scope: string; exclusions: string | null; expected_completion: string | null; valid_until: string | null; notes: string | null;
+          prepared_by: string; sent_at: string | null; content_hash: string | null; decided_at: string | null; decided_by: string | null;
+          decision_note: string | null; created_at: string; updated_at: string;
+        }>>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -700,6 +736,14 @@ export interface Database {
       set_contact_sharing: { Args: { p_conversation: string; p_consent: boolean }; Returns: undefined };
       get_conversation_contacts: { Args: { p_conversation: string }; Returns: Json };
       list_my_conversations: { Args: Record<string, never>; Returns: Json };
+      save_estimate_draft: {
+        Args: { p_request: string; p_provider: string; p_estimate: string | null; p_kind: EstimateKind; p_title: string | null; p_fields: Json };
+        Returns: string;
+      };
+      discard_estimate_draft: { Args: { p_revision: string }; Returns: undefined };
+      send_estimate_revision: { Args: { p_revision: string }; Returns: string };
+      withdraw_estimate_revision: { Args: { p_revision: string; p_reason: string }; Returns: undefined };
+      decide_estimate: { Args: { p_revision: string; p_decision: string; p_hash: string; p_note?: string | null }; Returns: undefined };
     };
     Enums: {
       app_role: AppRole;
@@ -723,6 +767,8 @@ export interface Database {
       request_urgency: RequestUrgency;
       invitation_status: InvitationStatus;
       message_kind: MessageKind;
+      estimate_kind: EstimateKind;
+      estimate_revision_status: EstimateRevisionStatus;
     };
     CompositeTypes: Record<string, never>;
   };

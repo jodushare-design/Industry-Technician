@@ -13,8 +13,8 @@ The working log for the phased build in the "Claude Code Master Prompt Sequence"
 | Onboarding: customers, technicians, companies, verification | 5 | Done (web + admin; Android onboarding forms pending) | see git log |
 | Requests and provider discovery | 6 | Done (web + admin; Android request forms pending) | see git log |
 | In-app chat and optional WhatsApp hand-off | 7 | Done (web; Android chat pending) | see git log |
-| Estimates and customer approval | 8 | **In progress** | |
-| Spare-parts coordination | 9 | Not started | |
+| Estimates and customer approval | 8 | Done (web) | see git log |
+| Spare-parts coordination | 9 | **In progress** | |
 | Job states, completion, complaints | 10 | Not started | |
 | Admin, compliance, security tests | 11 | Not started | |
 | Pilot test plan and release docs | 12 | Not started | |

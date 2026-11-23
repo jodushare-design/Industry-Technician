@@ -30,11 +30,12 @@ export interface ChatProps {
   open: boolean;
   reference: string;
   otherName: string;
-  /** Where an estimate / parts card links to. */
-  cardHref?: (kind: "estimate_card" | "parts_card", refId: string) => string;
+  /** Links for estimate / parts cards: base path + record id (must be plain data from server components). */
+  estimateHrefBase?: string;
+  partsHrefBase?: string;
 }
 
-export function Chat({ conversationId, myUserId, mySide, open, reference, otherName, cardHref }: ChatProps) {
+export function Chat({ conversationId, myUserId, mySide, open, reference, otherName, estimateHrefBase, partsHrefBase }: ChatProps) {
   const supabase = getBrowserSupabase();
   const [messages, setMessages] = useState<Message[]>([]);
   const [urls, setUrls] = useState<Record<string, string>>({});
@@ -170,7 +171,9 @@ export function Chat({ conversationId, myUserId, mySide, open, reference, otherN
                   <div className="rounded border border-current/30 p-2">
                     <p className="font-semibold">{m.kind === "estimate_card" ? "Estimate" : "Spare part"}</p>
                     <p>{m.body}</p>
-                    {cardHref && m.ref_id && <a className="underline" href={cardHref(m.kind, m.ref_id)}>Open</a>}
+                    {m.ref_id && (m.kind === "estimate_card" ? estimateHrefBase : partsHrefBase) && (
+                      <a className="underline" href={(m.kind === "estimate_card" ? estimateHrefBase : partsHrefBase) + m.ref_id}>Open</a>
+                    )}
                   </div>
                 )}
                 <p className="mt-1 text-right text-[11px] opacity-75">{time(m.created_at)}{mine && (read ? " · Read" : " · Sent")}</p>

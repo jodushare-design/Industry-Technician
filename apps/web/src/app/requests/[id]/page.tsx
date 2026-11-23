@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { getProviderPublic, mediaUrl } from "@itm/api";
-import { INVITATION_STATUS_LABELS, JOB_STATUS_LABELS, SERVICE_TYPE_LABELS, SYMPTOM_LABELS, URGENCY_LABELS, type Symptom } from "@itm/core";
+import { getProviderPublic, listEstimates, mediaUrl } from "@itm/api";
+import { ESTIMATE_KIND_LABELS, ESTIMATE_STATUS_LABELS, INVITATION_STATUS_LABELS, JOB_STATUS_LABELS, SERVICE_TYPE_LABELS, SYMPTOM_LABELS, URGENCY_LABELS, formatInr, toPaise, type Symptom } from "@itm/core";
 import { getSession } from "@itm/next/server";
 import { Alert, Card, Flash, PageHeader, StatusPill, primaryButtonClass, smallButtonClass } from "@itm/ui";
 import { MediaUploader } from "@/components/media-uploader";
@@ -36,12 +36,13 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
     client.from("factories").select("name, locality").eq("id", r.factory_id).maybeSingle(),
   ]);
   const { data: conversations } = await client.from("conversations").select("id, provider_profile_id").eq("request_id", id);
+  const estimates = await listEstimates(client, id);
   const name = new Map((entities ?? []).map((e) => [e.id, e.name]));
 
   // latest matching run only
   const latestRun = matches?.[0]?.created_at;
   const latest = (matches ?? []).filter((m) => m.created_at === latestRun).sort((a, b) => a.rank - b.rank);
-  const providerIds = [...new Set([...latest.map((m) => m.provider_profile_id), ...(invitations ?? []).map((i) => i.provider_profile_id)])];
+  const providerIds = [...new Set([...latest.map((m) => m.provider_profile_id), ...(invitations ?? []).map((i) => i.provider_profile_id), ...estimates.map((e) => e.provider_profile_id)])];
   const publics = await Promise.all(providerIds.map(async (pid) => [pid, await getProviderPublic(client, pid).catch(() => null)] as const));
   const pub = new Map(publics);
   const invitationOf = new Map((invitations ?? []).map((i) => [i.provider_profile_id, i]));
@@ -93,6 +94,30 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
         )}
         {open && <MediaUploader requestId={id} />}
       </Card>
+
+      {estimates.length > 0 && (
+        <Card>
+          <h2 className="mb-3 font-semibold">Estimates</h2>
+          <ul className="space-y-2">
+            {estimates.map((e) => {
+              const latest = e.revisions[0];
+              if (!latest) return null;
+              return (
+                <li key={e.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line p-3 text-sm">
+                  <span>
+                    <Link className="font-medium underline" href={"/requests/" + id + "/estimates/" + latest.id}>{e.title}</Link>
+                    <span className="text-muted"> · {ESTIMATE_KIND_LABELS[e.kind]} · {pub.get(e.provider_profile_id)?.display_name ?? "Provider"} · revision {latest.revision_no}</span>
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <span className="font-semibold">{formatInr(toPaise(latest.total))}</span>
+                    <StatusPill tone={latest.status === "accepted" ? "success" : latest.status === "sent" ? "warning" : "neutral"}>{ESTIMATE_STATUS_LABELS[latest.status]}</StatusPill>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
+      )}
 
       {(invitations ?? []).length > 0 && (
         <Card>
@@ -157,6 +182,8 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
             open={!!activeInvitation && ["invited", "accepted"].includes(activeInvitation.status) && !["closed", "cancelled"].includes(r.status)}
             reference={r.reference}
             otherName={pub.get(activeConv.provider_profile_id)?.display_name ?? "Provider"}
+            estimateHrefBase={"/requests/" + id + "/estimates/"}
+            partsHrefBase={"/requests/" + id + "/parts#part-"}
           />
         </Card>
       )}

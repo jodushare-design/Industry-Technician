@@ -137,6 +137,14 @@ export default async function ProviderRequestPage({ params, searchParams }: Page
         );
       })}
 
+      {myInvitations.some((i) => i.status === "accepted") && (
+        <Card>
+          <h2 className="mb-1 font-semibold">Estimates</h2>
+          <p className="mb-2 text-sm text-muted">Prepare and send your estimate. The customer approves it in the app before you start.</p>
+          <Link href={"/work/" + id + "/estimates"} className={smallButtonClass + " inline-flex items-center"}>Open estimates</Link>
+        </Card>
+      )}
+
       {activeConv && (
         <Card>
           <h2 id="chat" className="mb-2 font-semibold">Messages with {r.customer_name}</h2>
@@ -148,6 +156,8 @@ export default async function ProviderRequestPage({ params, searchParams }: Page
             open={!!activeInv && ["invited", "accepted"].includes(activeInv.status) && !["closed", "cancelled"].includes(r.status)}
             reference={r.reference}
             otherName={r.customer_name}
+            estimateHrefBase={"/work/" + id + "/estimates#rev-"}
+            partsHrefBase={"/work/" + id + "/parts#part-"}
           />
         </Card>
       )}
