@@ -12,8 +12,8 @@ The working log for the phased build in the "Claude Code Master Prompt Sequence"
 | Catalogue and rice-mill starter taxonomy | 4 | Done | c2a308b |
 | Onboarding: customers, technicians, companies, verification | 5 | Done (web + admin; Android onboarding forms pending) | see git log |
 | Requests and provider discovery | 6 | Done (web + admin; Android request forms pending) | see git log |
-| In-app chat and optional WhatsApp hand-off | 7 | **In progress** | |
-| Estimates and customer approval | 8 | Not started | |
+| In-app chat and optional WhatsApp hand-off | 7 | Done (web; Android chat pending) | see git log |
+| Estimates and customer approval | 8 | **In progress** | |
 | Spare-parts coordination | 9 | Not started | |
 | Job states, completion, complaints | 10 | Not started | |
 | Admin, compliance, security tests | 11 | Not started | |

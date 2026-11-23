@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { PLATFORM_DISCLAIMER_SHORT } from "@itm/ui";
+import { NotificationBell } from "@/components/notification-bell";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/" className="font-bold">
               Industrial Technician Marketplace
             </Link>
-            <div className="flex items-center gap-4 text-sm">
+            <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm">
               <Link href="/machines" className="hover:underline">
                 Machines
               </Link>
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/work" className="hover:underline">
                 Work
               </Link>
+              <NotificationBell />
               <Link href="/account" className="hover:underline">
                 My account
               </Link>

@@ -6,6 +6,7 @@ import { INVITATION_STATUS_LABELS, JOB_STATUS_LABELS, SERVICE_TYPE_LABELS, SYMPT
 import { getSession } from "@itm/next/server";
 import { Alert, Card, Flash, PageHeader, StatusPill, primaryButtonClass, smallButtonClass } from "@itm/ui";
 import { MediaUploader } from "@/components/media-uploader";
+import { Chat } from "@/components/chat";
 import { cancelAction, findProvidersAction, inviteAction, selectAction, withdrawAction } from "../actions";
 
 export const metadata: Metadata = { title: "Request" };
@@ -34,6 +35,7 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
     client.from("catalogue_entities").select("id, name").in("id", [r.machine_type_id, r.industry_id].filter(Boolean) as string[]),
     client.from("factories").select("name, locality").eq("id", r.factory_id).maybeSingle(),
   ]);
+  const { data: conversations } = await client.from("conversations").select("id, provider_profile_id").eq("request_id", id);
   const name = new Map((entities ?? []).map((e) => [e.id, e.name]));
 
   // latest matching run only
@@ -46,6 +48,11 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
   const media = await Promise.all((attachments ?? []).map(async (a) => ({ ...a, url: await mediaUrl(client, a.storage_path) })));
   const open = OPEN.includes(r.status);
   const canSelect = ["discussion", "estimate_sent", "awaiting_approval"].includes(r.status);
+  const activeConv =
+    (conversations ?? []).find((c) => c.id === sp.c) ??
+    (conversations ?? []).find((c) => c.provider_profile_id === r.selected_provider_id) ??
+    (conversations ?? [])[0];
+  const activeInvitation = activeConv ? invitationOf.get(activeConv.provider_profile_id) : undefined;
 
   return (
     <div className="space-y-6">
@@ -122,7 +129,35 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
               );
             })}
           </ul>
-          <p className="mt-2 text-sm text-muted">Chat with providers and their estimates arrive in the next update of the app.</p>
+        </Card>
+      )}
+
+      {activeConv && (
+        <Card>
+          <h2 id="chat" className="mb-2 font-semibold">Messages</h2>
+          {(conversations ?? []).length > 1 && (
+            <nav className="mb-3 flex flex-wrap gap-2 text-sm" aria-label="Conversations">
+              {(conversations ?? []).map((c) => (
+                <Link
+                  key={c.id}
+                  href={"/requests/" + id + "?c=" + c.id + "#chat"}
+                  aria-current={c.id === activeConv.id ? "page" : undefined}
+                  className={"rounded-md border px-3 py-1.5 " + (c.id === activeConv.id ? "border-accent bg-accent text-on-accent" : "border-line")}
+                >
+                  {pub.get(c.provider_profile_id)?.display_name ?? "Provider"}
+                </Link>
+              ))}
+            </nav>
+          )}
+          <Chat
+            key={activeConv.id}
+            conversationId={activeConv.id}
+            myUserId={session.context.profile.id}
+            mySide="customer"
+            open={!!activeInvitation && ["invited", "accepted"].includes(activeInvitation.status) && !["closed", "cancelled"].includes(r.status)}
+            reference={r.reference}
+            otherName={pub.get(activeConv.provider_profile_id)?.display_name ?? "Provider"}
+          />
         </Card>
       )}
 

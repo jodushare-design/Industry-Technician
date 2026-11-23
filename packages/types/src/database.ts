@@ -57,6 +57,8 @@ export type ServiceType = 'breakdown' | 'maintenance' | 'installation' | 'inspec
 export type RequestUrgency = 'emergency' | 'within_3_days' | 'this_week' | 'flexible';
 export type InvitationStatus = 'invited' | 'accepted' | 'declined' | 'withdrawn' | 'not_selected' | 'closed';
 
+export type MessageKind = 'text' | 'photo' | 'video' | 'voice' | 'estimate_card' | 'parts_card' | 'system';
+
 type Row<T> = T;
 type NoInsert = never;
 
@@ -511,7 +513,7 @@ export interface Database {
         Row: Row<{
           id: string; request_id: string; provider_profile_id: string; status: InvitationStatus; match_score: number | null;
           match_reasons: Json | null; invited_by: string; invited_at: string; responded_at: string | null;
-          responded_by: string | null; decline_reason: string | null;
+          responded_by: string | null; decline_reason: string | null; assigned_member_id: string | null;
         }>;
         Insert: Partial<Row<{
           id: string; request_id: string; provider_profile_id: string; status: InvitationStatus; match_score: number | null;
@@ -522,6 +524,57 @@ export interface Database {
           id: string; request_id: string; provider_profile_id: string; status: InvitationStatus; match_score: number | null;
           match_reasons: Json | null; invited_by: string; invited_at: string; responded_at: string | null;
           responded_by: string | null; decline_reason: string | null;
+        }>>;
+        Relationships: [];
+      };
+      conversations: {
+        Row: Row<{ id: string; request_id: string; provider_profile_id: string; created_at: string; last_message_at: string | null }>;
+        Insert: Partial<Row<{ id: string; request_id: string; provider_profile_id: string; created_at: string; last_message_at: string | null }>>;
+        Update: Partial<Row<{ id: string; request_id: string; provider_profile_id: string; created_at: string; last_message_at: string | null }>>;
+        Relationships: [];
+      };
+      messages: {
+        Row: Row<{
+          id: string; conversation_id: string; sender_id: string | null; sender_side: 'customer' | 'provider' | 'system';
+          kind: MessageKind; body: string | null; storage_path: string | null; mime_type: string | null; size_bytes: number | null;
+          ref_id: string | null; client_id: string | null; created_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; conversation_id: string; sender_id: string | null; sender_side: 'customer' | 'provider' | 'system';
+          kind: MessageKind; body: string | null; storage_path: string | null; mime_type: string | null; size_bytes: number | null;
+          ref_id: string | null; client_id: string | null; created_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; conversation_id: string; sender_id: string | null; sender_side: 'customer' | 'provider' | 'system';
+          kind: MessageKind; body: string | null; storage_path: string | null; mime_type: string | null; size_bytes: number | null;
+          ref_id: string | null; client_id: string | null; created_at: string;
+        }>>;
+        Relationships: [];
+      };
+      conversation_reads: {
+        Row: Row<{ conversation_id: string; user_id: string; last_read_at: string }>;
+        Insert: Partial<Row<{ conversation_id: string; user_id: string; last_read_at: string }>>;
+        Update: Partial<Row<{ conversation_id: string; user_id: string; last_read_at: string }>>;
+        Relationships: [];
+      };
+      contact_share_consents: {
+        Row: Row<{ id: string; conversation_id: string; side: 'customer' | 'provider'; user_id: string; granted_at: string; revoked_at: string | null }>;
+        Insert: Partial<Row<{ id: string; conversation_id: string; side: 'customer' | 'provider'; user_id: string; granted_at: string; revoked_at: string | null }>>;
+        Update: Partial<Row<{ id: string; conversation_id: string; side: 'customer' | 'provider'; user_id: string; granted_at: string; revoked_at: string | null }>>;
+        Relationships: [];
+      };
+      notifications: {
+        Row: Row<{
+          id: string; user_id: string; kind: string; title: string; body: string | null; link: string | null;
+          created_at: string; read_at: string | null; push_sent_at: string | null;
+        }>;
+        Insert: Partial<Row<{
+          id: string; user_id: string; kind: string; title: string; body: string | null; link: string | null;
+          created_at: string; read_at: string | null; push_sent_at: string | null;
+        }>>;
+        Update: Partial<Row<{
+          id: string; user_id: string; kind: string; title: string; body: string | null; link: string | null;
+          created_at: string; read_at: string | null; push_sent_at: string | null;
         }>>;
         Relationships: [];
       };
@@ -635,6 +688,18 @@ export interface Database {
       cancel_service_request: { Args: { p_request: string; p_reason: string }; Returns: undefined };
       get_request_for_provider: { Args: { p_request: string }; Returns: Json };
       list_my_invitations: { Args: { p_include_closed?: boolean }; Returns: Json };
+      send_message: {
+        Args: {
+          p_conversation: string; p_kind: MessageKind; p_body?: string | null; p_storage_path?: string | null;
+          p_mime_type?: string | null; p_size_bytes?: number | null; p_client_id?: string | null;
+        };
+        Returns: string;
+      };
+      mark_conversation_read: { Args: { p_conversation: string }; Returns: undefined };
+      assign_company_member: { Args: { p_invitation: string; p_member: string | null }; Returns: undefined };
+      set_contact_sharing: { Args: { p_conversation: string; p_consent: boolean }; Returns: undefined };
+      get_conversation_contacts: { Args: { p_conversation: string }; Returns: Json };
+      list_my_conversations: { Args: Record<string, never>; Returns: Json };
     };
     Enums: {
       app_role: AppRole;
@@ -657,6 +722,7 @@ export interface Database {
       service_type: ServiceType;
       request_urgency: RequestUrgency;
       invitation_status: InvitationStatus;
+      message_kind: MessageKind;
     };
     CompositeTypes: Record<string, never>;
   };
