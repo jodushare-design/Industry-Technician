@@ -1,0 +1,23 @@
+# Website (apps/web) on Netlify. The monorepo installs and builds from the root.
+# Settings the site needs (set in Netlify → Site settings → Environment variables):
+#   NEXT_PUBLIC_SUPABASE_URL              hosted Supabase project URL (public)
+#   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY  hosted publishable key (public)
+# Never set a service-role or secret key here. Demo mode stays off on Netlify.
+
+[build]
+  command = "npm ci && npm run build:web"
+  publish = "apps/web/.next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_PUBLIC_DEMO_MODE = "0"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

@@ -34,3 +34,6 @@ npm-debug.log*
 
 # Local demo backend data (scripts/demo)
 .data-demo/
+
+# Local Netlify folder
+.netlify
