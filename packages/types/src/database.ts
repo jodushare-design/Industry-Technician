@@ -49,6 +49,14 @@ export type ProviderDocumentType = 'identity' | 'business_registration' | 'gst_c
 export type DocumentReviewStatus = 'pending' | 'accepted' | 'rejected';
 export type VerificationKind = 'identity' | 'business' | 'certificate' | 'licence' | 'insurance';
 
+export type JobStatus =
+  | 'submitted' | 'finding_providers' | 'provider_contacted' | 'discussion' | 'estimate_sent' | 'awaiting_approval'
+  | 'approved' | 'scheduled' | 'provider_travelling' | 'provider_arrived' | 'work_in_progress' | 'waiting_for_parts'
+  | 'work_completed' | 'customer_confirmation_pending' | 'closed' | 'cancelled' | 'disputed';
+export type ServiceType = 'breakdown' | 'maintenance' | 'installation' | 'inspection' | 'other';
+export type RequestUrgency = 'emergency' | 'within_3_days' | 'this_week' | 'flexible';
+export type InvitationStatus = 'invited' | 'accepted' | 'declined' | 'withdrawn' | 'not_selected' | 'closed';
+
 type Row<T> = T;
 type NoInsert = never;
 
@@ -433,6 +441,90 @@ export interface Database {
         }>>;
         Relationships: [];
       };
+      service_requests: {
+        Row: Row<{
+          id: string; reference: string; customer_id: string; factory_id: string; customer_machine_id: string | null;
+          industry_id: string | null; machine_type_id: string; manufacturer_id: string | null; model_id: string | null;
+          manufacturer_text: string | null; model_text: string | null; service_type: ServiceType; symptoms: string[];
+          description: string; urgency: RequestUrgency; preferred_date: string | null; status: JobStatus;
+          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null;
+        }>;
+        Insert: Partial<Row<{
+          id: string; reference: string; customer_id: string; factory_id: string; customer_machine_id: string | null;
+          industry_id: string | null; machine_type_id: string; manufacturer_id: string | null; model_id: string | null;
+          manufacturer_text: string | null; model_text: string | null; service_type: ServiceType; symptoms: string[];
+          description: string; urgency: RequestUrgency; preferred_date: string | null; status: JobStatus;
+          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null;
+        }>>;
+        Update: Partial<Row<{
+          id: string; reference: string; customer_id: string; factory_id: string; customer_machine_id: string | null;
+          industry_id: string | null; machine_type_id: string; manufacturer_id: string | null; model_id: string | null;
+          manufacturer_text: string | null; model_text: string | null; service_type: ServiceType; symptoms: string[];
+          description: string; urgency: RequestUrgency; preferred_date: string | null; status: JobStatus;
+          selected_provider_id: string | null; cancel_reason: string | null; created_at: string; updated_at: string; closed_at: string | null;
+        }>>;
+        Relationships: [];
+      };
+      job_status_events: {
+        Row: Row<{
+          id: number; request_id: string; from_status: JobStatus | null; to_status: JobStatus; actor_id: string | null; note: string | null; created_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: number; request_id: string; from_status: JobStatus | null; to_status: JobStatus; actor_id: string | null; note: string | null; created_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: number; request_id: string; from_status: JobStatus | null; to_status: JobStatus; actor_id: string | null; note: string | null; created_at: string;
+        }>>;
+        Relationships: [];
+      };
+      request_attachments: {
+        Row: Row<{
+          id: string; request_id: string; kind: 'photo' | 'video' | 'voice'; storage_path: string; mime_type: string;
+          size_bytes: number; uploaded_by: string; created_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; request_id: string; kind: 'photo' | 'video' | 'voice'; storage_path: string; mime_type: string;
+          size_bytes: number; uploaded_by: string; created_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; request_id: string; kind: 'photo' | 'video' | 'voice'; storage_path: string; mime_type: string;
+          size_bytes: number; uploaded_by: string; created_at: string;
+        }>>;
+        Relationships: [];
+      };
+      match_results: {
+        Row: Row<{
+          id: string; request_id: string; provider_profile_id: string; rank: number; score: number; reasons: Json;
+          distance_km: number | null; created_at: string;
+        }>;
+        Insert: Partial<Row<{
+          id: string; request_id: string; provider_profile_id: string; rank: number; score: number; reasons: Json;
+          distance_km: number | null; created_at: string;
+        }>>;
+        Update: Partial<Row<{
+          id: string; request_id: string; provider_profile_id: string; rank: number; score: number; reasons: Json;
+          distance_km: number | null; created_at: string;
+        }>>;
+        Relationships: [];
+      };
+      request_invitations: {
+        Row: Row<{
+          id: string; request_id: string; provider_profile_id: string; status: InvitationStatus; match_score: number | null;
+          match_reasons: Json | null; invited_by: string; invited_at: string; responded_at: string | null;
+          responded_by: string | null; decline_reason: string | null;
+        }>;
+        Insert: Partial<Row<{
+          id: string; request_id: string; provider_profile_id: string; status: InvitationStatus; match_score: number | null;
+          match_reasons: Json | null; invited_by: string; invited_at: string; responded_at: string | null;
+          responded_by: string | null; decline_reason: string | null;
+        }>>;
+        Update: Partial<Row<{
+          id: string; request_id: string; provider_profile_id: string; status: InvitationStatus; match_score: number | null;
+          match_reasons: Json | null; invited_by: string; invited_at: string; responded_at: string | null;
+          responded_by: string | null; decline_reason: string | null;
+        }>>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -523,6 +615,26 @@ export interface Database {
       review_provider_document: { Args: { p_document: string; p_accept: boolean; p_note?: string | null }; Returns: undefined };
       set_provider_status: { Args: { p_profile: string; p_status: ProviderStatus; p_reason?: string | null }; Returns: undefined };
       get_provider_public: { Args: { p_profile: string }; Returns: Json };
+      create_service_request: {
+        Args: {
+          p_factory: string; p_service_type: ServiceType; p_description: string; p_symptoms?: string[];
+          p_customer_machine?: string | null; p_machine_type?: string | null; p_industry?: string | null;
+          p_manufacturer_text?: string | null; p_model_text?: string | null; p_urgency?: RequestUrgency; p_preferred_date?: string | null;
+        };
+        Returns: string;
+      };
+      register_request_attachment: {
+        Args: { p_request: string; p_kind: string; p_storage_path: string; p_mime_type: string; p_size_bytes: number };
+        Returns: string;
+      };
+      match_providers: { Args: { p_request: string; p_limit?: number }; Returns: Json };
+      invite_provider: { Args: { p_request: string; p_provider: string }; Returns: string };
+      withdraw_invitation: { Args: { p_invitation: string }; Returns: undefined };
+      respond_to_invitation: { Args: { p_invitation: string; p_accept: boolean; p_reason?: string | null }; Returns: undefined };
+      select_provider: { Args: { p_request: string; p_provider: string }; Returns: undefined };
+      cancel_service_request: { Args: { p_request: string; p_reason: string }; Returns: undefined };
+      get_request_for_provider: { Args: { p_request: string }; Returns: Json };
+      list_my_invitations: { Args: { p_include_closed?: boolean }; Returns: Json };
     };
     Enums: {
       app_role: AppRole;
@@ -541,6 +653,10 @@ export interface Database {
       provider_document_type: ProviderDocumentType;
       document_review_status: DocumentReviewStatus;
       verification_kind: VerificationKind;
+      job_status: JobStatus;
+      service_type: ServiceType;
+      request_urgency: RequestUrgency;
+      invitation_status: InvitationStatus;
     };
     CompositeTypes: Record<string, never>;
   };

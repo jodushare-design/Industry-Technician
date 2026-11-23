@@ -4,10 +4,10 @@ import { revalidatePath } from "next/cache";
 import { reportError, toAppError } from "@itm/core";
 import { getSession, type Session } from "@itm/next/server";
 
-/** Same-site path under /account or /providers only. */
+/** Same-site path under the signed-in areas only. */
 export function safeBack(value: unknown, fallback = "/account"): string {
   const v = String(value ?? "");
-  return /^\/(account|providers)(\/|$|\?)/.test(v) && !v.startsWith("//") ? v : fallback;
+  return /^\/(account|providers|requests|work)(\/|$|\?)/.test(v) && !v.startsWith("//") ? v : fallback;
 }
 
 export function withMessage(path: string, key: "notice" | "error", message: string): string {
@@ -34,7 +34,7 @@ export async function runAction(back: string, where: string, fn: (session: Sessi
     const fields = err.fieldErrors ? Object.values(err.fieldErrors).flat().join(" ") : "";
     target = withMessage(back, "error", fields || err.userMessage);
   }
-  revalidatePath("/account", "layout");
+  revalidatePath("/", "layout");
   redirect(target);
 }
 

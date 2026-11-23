@@ -1,0 +1,107 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { getRequestForProvider, mediaUrl, respondToInvitation } from "@itm/api";
+import { JOB_STATUS_LABELS, SERVICE_TYPE_LABELS, SYMPTOM_LABELS, URGENCY_LABELS, type Symptom } from "@itm/core";
+import { getSession } from "@itm/next/server";
+import { Alert, Card, Flash, PageHeader, StatusPill, primaryButtonClass, smallButtonClass } from "@itm/ui";
+import { runAction } from "@/lib/action";
+
+export const metadata: Metadata = { title: "Request" };
+export const dynamic = "force-dynamic";
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+async function respondAction(form: FormData) {
+  "use server";
+  const requestId = String(form.get("requestId"));
+  await runAction(`/work/${requestId}`, "web.work.respond", async ({ client }) => {
+    const accept = form.get("accept") === "true";
+    await respondToInvitation(client, String(form.get("invitationId")), accept, String(form.get("reason") ?? ""));
+    return accept ? "Accepted. You can now see the full address. Agree the work with the customer before going." : "Declined. Thank you for replying.";
+  });
+}
+
+export default async function ProviderRequestPage({ params, searchParams }: PageProps<"/work/[id]">) {
+  const { id } = await params;
+  if (!UUID.test(id)) notFound();
+  const session = await getSession();
+  if (!session) redirect(`/sign-in?next=/work/${id}`);
+  const sp = await searchParams;
+  const r = await getRequestForProvider(session.client, id);
+  if (!r) notFound();
+  const media = await Promise.all(r.attachments.map(async (a) => ({ ...a, url: await mediaUrl(session.client, a.path) })));
+  const myInvitations = r.invitations ?? [];
+
+  return (
+    <div className="space-y-6">
+      <Link href="/work" className="text-sm underline">← Requests for you</Link>
+      <PageHeader
+        title={`${r.machine_type} — ${SERVICE_TYPE_LABELS[r.service_type as keyof typeof SERVICE_TYPE_LABELS]}`}
+        description={<span className="flex flex-wrap items-center gap-2">{r.reference} · from {r.customer_name} <StatusPill tone="warning">{JOB_STATUS_LABELS[r.status as keyof typeof JOB_STATUS_LABELS]}</StatusPill></span>}
+      />
+      <Flash notice={sp.notice} error={sp.error} />
+      {r.selected_you && <Alert tone="success" title="The customer chose you">Agree the scope, price and site arrangements with them. Your estimate will be recorded here.</Alert>}
+
+      {myInvitations.filter((i) => i.status === "invited").map((i) => (
+        <Card key={i.id} className="space-y-3">
+          <h2 className="font-semibold">Can you take this on?</h2>
+          {i.match_reasons && i.match_reasons.length > 0 && (
+            <p className="text-sm text-muted">The customer saw: {i.match_reasons.join(" · ")}</p>
+          )}
+          <div className="flex flex-wrap items-end gap-3">
+            <form action={respondAction}>
+              <input type="hidden" name="requestId" value={id} />
+              <input type="hidden" name="invitationId" value={i.id} />
+              <input type="hidden" name="accept" value="true" />
+              <button className={primaryButtonClass}>Accept</button>
+            </form>
+            <form action={respondAction} className="flex flex-wrap items-end gap-2">
+              <input type="hidden" name="requestId" value={id} />
+              <input type="hidden" name="invitationId" value={i.id} />
+              <input type="hidden" name="accept" value="false" />
+              <label className="flex flex-col text-sm">Reason (optional)
+                <input name="reason" className="min-h-10 rounded-md border border-line bg-surface px-2" />
+              </label>
+              <button className={smallButtonClass}>Decline</button>
+            </form>
+          </div>
+          <p className="text-xs text-muted">Accepting shares the factory address with you. It does not commit you to a price — you send your own estimate.</p>
+        </Card>
+      ))}
+
+      <Card>
+        <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
+          {r.industry && (<><dt className="text-muted">Industry</dt><dd>{r.industry}</dd></>)}
+          <dt className="text-muted">Machine</dt><dd>{[r.machine_type, r.manufacturer, r.model, r.machine_label, r.year_installed].filter(Boolean).join(" · ")}</dd>
+          <dt className="text-muted">Customer reports</dt><dd>{r.symptoms.map((s) => SYMPTOM_LABELS[s as Symptom]).join(", ") || "—"}</dd>
+          <dt className="text-muted">Description</dt><dd className="whitespace-pre-wrap">{r.description}</dd>
+          <dt className="text-muted">When</dt><dd>{URGENCY_LABELS[r.urgency as keyof typeof URGENCY_LABELS]}{r.preferred_date ? ` · preferred ${r.preferred_date}` : ""}</dd>
+          <dt className="text-muted">Where</dt>
+          <dd>
+            {r.engaged ? [r.factory_name, r.address_line, r.locality, r.district, r.pincode].filter(Boolean).join(", ") : `${r.locality}${r.district ? `, ${r.district}` : ""} (full address after you accept)`}
+          </dd>
+        </dl>
+        <p className="mt-3 text-xs text-muted">The customer&apos;s description is not a diagnosis. You assess the machine and decide the work and method.</p>
+      </Card>
+
+      {media.length > 0 && (
+        <Card>
+          <h2 className="mb-2 font-semibold">Photos, videos and voice notes</h2>
+          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {media.map((m) => (
+              <li key={m.id} className="rounded-md border border-line p-1">
+                {m.url && m.kind === "photo" && (
+                  // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
+                  <img src={m.url} alt="Photo from the customer" className="aspect-square w-full rounded object-cover" loading="lazy" />
+                )}
+                {m.url && m.kind === "video" && <video src={m.url} controls preload="metadata" className="aspect-square w-full rounded bg-black" />}
+                {m.url && m.kind === "voice" && <audio src={m.url} controls preload="none" className="w-full" />}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+    </div>
+  );
+}

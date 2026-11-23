@@ -24,6 +24,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/machines" className="hover:underline">
                 Machines
               </Link>
+              <Link href="/requests" className="hover:underline">
+                My requests
+              </Link>
+              <Link href="/work" className="hover:underline">
+                Work
+              </Link>
               <Link href="/account" className="hover:underline">
                 My account
               </Link>

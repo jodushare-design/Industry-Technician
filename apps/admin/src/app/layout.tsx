@@ -20,7 +20,7 @@ const SECTIONS: Array<{ label: string; href?: string; phase?: string }> = [
   { label: "Technicians", href: "/providers?kind=individual&status=all" },
   { label: "Companies", href: "/providers?kind=company&status=all" },
   { label: "Company employees", href: "/providers?kind=company_member&status=all" },
-  { label: "Service requests", phase: "6" },
+  { label: "Service requests", href: "/requests" },
   { label: "Complaints", phase: "10" },
   { label: "Reports", phase: "11" },
   { label: "Settings", phase: "11" },
